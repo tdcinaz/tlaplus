@@ -516,6 +516,21 @@ public class TokenizeSpec
       { return null !=  stringHashTable.get(str);
       }
 
+    static void reset()
+      /*********************************************************************
+      * Clears the identHashTable, usedBuiltinHashTable, and               *
+      * stringHashTable.  Tokenize does not clear them, because TeX.java   *
+      * relies on their accumulating across the environments of a single   *
+      * document.  Anything that tokenizes several independent specs in    *
+      * one JVM (the JUnit tests) must call this between specs, or the     *
+      * identifiers of one spec influence how the comments of the next     *
+      * are formatted.                                                     *
+      *********************************************************************/
+      { identHashTable.clear() ;
+        usedBuiltinHashTable.clear() ;
+        stringHashTable.clear() ;
+      }
+
     private static String nullString = "" ;
       /*********************************************************************
       * The hash tables above are used only to remember the keys; there    *

@@ -345,6 +345,20 @@ public class TokenizeComment
       private static final int DONE             = 22 ;
       
     private static int state = START ;
+
+    static void reset()
+      /*********************************************************************
+      * Resets the quote state that survives from one call of Tokenize to  *
+      * the next.  Within a single spec that carry-over is deliberate (a   *
+      * `quoted' region may span comments), so Tokenize does not reset it; *
+      * but a JVM that processes several independent specs (the JUnit      *
+      * tests) must call this between specs, or an unbalanced ` in one     *
+      * spec forces every identifier in the next spec's comments to be     *
+      * typeset as TLA.                                                    *
+      *********************************************************************/
+      { inDQuote = false ;
+        inSQuote = false ;
+      }
           /*****************************************************************
           * The state in the tokenizing algorithm.                         *
           *****************************************************************/

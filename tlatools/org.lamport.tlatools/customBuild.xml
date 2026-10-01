@@ -1024,9 +1024,11 @@
 				<pathelement location="lib/CommunityModules.jar"/>
 				<pathelement location="test-model/UserModuleOverrideFromJar.jar" />
 				<pathelement location="lib/prettier4j-0.3.2.jar" />
+				<!-- test-class before class: the Eclipse .classpath also writes
+				     test classes into class/, and IDE-compiled copies must not
+				     shadow the ones compile-test just produced. -->
+				<pathelement path="${test.class.dir}" />
 				<pathelement path="${class.dir}" />
-				<pathelement path="${test.class.dir}" />
-				<pathelement path="${test.class.dir}" />
 				<pathelement path="test-model/" />
 				<pathelement path="test-resources/formatter/" />
 			</classpath>

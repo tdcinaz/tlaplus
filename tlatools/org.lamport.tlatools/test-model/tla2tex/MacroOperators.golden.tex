@@ -1,0 +1,138 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This spec exercises operator-application \ensuremath{\.{\rightarrow}}
+ TeX-macro rewriting for \ensuremath{TLATeX}.
+ The target transformation from the \ensuremath{README} is, for example:
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{T}{F}{10.0}{0}{}%
+ \ensuremath{Integral(a \.{+} b,\, c,\, d) \.{\implies}}
+ \ensuremath{\backslash}int\_\ensuremath{\{c\}\.{\ct}\{d\}} (\ensuremath{a
+ \.{+} b}) \ensuremath{\.{\,\backslash\,}}, dx
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+To do this the typesetter must locate each argument by scanning forward and
+ counting parentheses, commas, and the matching right-paren. The definitions
+ below give every ``macro-like'' operator a well-formed body so the module
+ still
+ parses with \ensuremath{SANY}; only the *call sites* matter for typesetting.
+\end{cpar}%
+\end{lcom}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} MacroOperators}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Reals}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Operators intended to become \ensuremath{TeX} macros with sub/superscripts.
+}%
+\@xx{}%
+\@x{ Integral ( f ,\, lo ,\, hi ) \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}int\_\ensuremath{\{lo\}\.{\ct}\{hi\} f
+ \.{\,\backslash\,}}, dx
+}%
+\@xx{}%
+\@x{ Sum ( term ,\, lo ,\, hi ) \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}sum\_\ensuremath{\{lo\}\.{\ct}\{hi\}} term
+}%
+\@xx{}%
+\@x{ Product ( term ,\, lo ,\, hi ) \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}prod\_\ensuremath{\{lo\}\.{\ct}\{hi\}} term
+}%
+\@xx{}%
+\@x{ Sqrt ( x ) \.{\defeq} x}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}sqrt\ensuremath{\{x\}
+}}%
+\@xx{}%
+\@x{ Frac ( a ,\, b ) \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}frac\ensuremath{\{a\}\{b\}
+}}%
+\@xx{}%
+\@x{ Pow ( base ,\, exp ) \.{\defeq} base}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow} base\.{\ct}\{exp\}
+}}%
+\@xx{}%
+\@x{ Norm ( v ) \.{\defeq} v}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}lVert \ensuremath{v}
+ \ensuremath{\backslash}rVert
+}%
+\@xx{}%
+\@x{ Abs ( x ) \.{\defeq} x}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}lvert \ensuremath{x}
+ \ensuremath{\backslash}rvert
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Single-argument call.
+}%
+\@xx{}%
+\@x{ A \.{\defeq} Sqrt ( 2 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Multi-argument calls: arguments are simple atoms.
+}%
+\@xx{}%
+\@x{ B \.{\defeq} Integral ( 1 ,\, 0 ,\, 10 )}%
+\@x{ C \.{\defeq} Frac ( 3 ,\, 4 )}%
+\@x{ D \.{\defeq} Pow ( 2 ,\, 8 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Arguments that are themselves compound expressions containing commas-in-sets
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ and parentheses -- the parser must not mistake the inner comma/parens for
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ argument separators.
+}%
+\@xx{}%
+\@x{ E \.{\defeq} Integral ( 2 \.{*} 3 \.{+} 1 ,\, 0 ,\, 10 )}%
+\@x{ F \.{\defeq} Sum ( ( 1 \.{+} 2 ) \.{*} 3 ,\, 1 ,\, 100 )}%
+\@x{ G \.{\defeq} Frac ( Abs ( \.{-} 5 ) ,\, Norm ( 7 ) )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ A set literal inside an argument: the commas here are NOT argument
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ separators of \ensuremath{Product}.
+}%
+\@xx{}%
+ \@x{ H \.{\defeq} Product ( \{ 1 ,\, 2 ,\, 3 \} \.{=} \{ 1 ,\, 2 ,\, 3 \} ,\,
+ 1 ,\, 5 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Realistic combination mirroring the \ensuremath{README} example
+ \ensuremath{\backslash}int\ensuremath{\.{\ct}\{a\.{+}b\}}\_\ensuremath{\{c\}
+ d}.
+}%
+\@xx{}%
+ \@x{ Example ( a ,\, b ,\, c ,\, d ) \.{\defeq} Integral ( a \.{+} b ,\, c
+ ,\, d )}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

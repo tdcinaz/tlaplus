@@ -1,0 +1,86 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+This spec stresses argument-boundary detection for the operator-to-macro
+ rewrite: deeply nested calls, calls spanning multiple lines, and arguments
+ that
+ contain function application brackets, tuples, and records. A correct parser
+ must track paren/bracket/brace depth to find each argument\mbox{'}s true
+ extent.
+\end{cpar}%
+\end{lcom}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} NestedArguments}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Reals ,\, Sequences}%
+\@pvspace{8.0pt}%
+\@x{ Integral ( f ,\, lo ,\, hi ) \.{\defeq} hi \.{-} lo}%
+\@x{ Sum ( term ,\, lo ,\, hi ) \.{\defeq} hi \.{-} lo}%
+\@x{ Sqrt ( x ) \.{\defeq} x}%
+\@x{ Frac ( a ,\, b ) \.{\defeq} a}%
+\@x{ Pow ( base ,\, exp ) \.{\defeq} base}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Nested to three levels; each inner call is one argument of the outer call.
+}%
+\@xx{}%
+\@x{ N1 \.{\defeq} Integral ( Sqrt ( Pow ( 2 ,\, 4 ) ) ,\, 0 ,\, 10 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Inner call appears inside an arithmetic argument.
+}%
+\@xx{}%
+ \@x{ N2 \.{\defeq} Integral ( Sqrt ( 9 ) \.{+} Frac ( 1 ,\, 2 ) ,\, 0 ,\, Pow
+ ( 2 ,\, 3 ) )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Multi-line call: the argument list is split across several lines and the
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ parser must join them before locating commas.
+}%
+\@xx{}%
+\@x{ N3 \.{\defeq} Sum (}%
+\@x{ Frac ( 1 ,\, Pow ( 2 ,\, 3 ) ) \.{+} Sqrt ( 16 ) ,\,}%
+\@x{ 1 ,\,}%
+\@x{ 100}%
+\@x{ )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Function application brackets inside an argument: \ensuremath{seq[i]} and
+ \ensuremath{record.field
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ must not be treated as argument boundaries.
+}%
+\@xx{}%
+\@x{ {\LOCAL} seq \.{\defeq} {\langle} 10 ,\, 20 ,\, 30 {\rangle}}%
+\@x{ {\LOCAL} rec \.{\defeq} [ re \.{\mapsto} 1 ,\, im \.{\mapsto} 2 ]}%
+ \@x{ N4 \.{\defeq} Integral ( seq [ 2 ] \.{+} rec . im ,\, 0 ,\, Len ( seq )
+ )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Tuple as a single argument -- its inner comma is not a separator.
+}%
+\@xx{}%
+ \@x{ N5 \.{\defeq} Frac ( {\langle} 1 ,\, 2 {\rangle} \.{=} {\langle} 1 ,\, 2
+ {\rangle} ,\, 3 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Doubly nested with a compound superscript, mirroring
+ \ensuremath{\backslash}int\ensuremath{\.{\ct}\{a\.{+}b\}}\_\ensuremath{\{c\}}.
+}%
+\@xx{}%
+ \@x{ N6 ( a ,\, b ,\, c ,\, d ) \.{\defeq} Integral ( Pow ( a ,\, b ) \.{+}
+ Frac ( c ,\, d ) ,\, c ,\, Sqrt ( d ) )}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

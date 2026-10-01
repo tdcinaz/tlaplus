@@ -1,0 +1,151 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This spec exercises simple identifier-to-symbol substitution for
+ \ensuremath{TLATeX}.
+ The goal: identifiers such as \ensuremath{alpha ,\, beta ,\, pi}
+ \ensuremath{should} \ensuremath{be} \ensuremath{typesettable} \ensuremath{as
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\ensuremath{\backslash}alpha,\, \ensuremath{\backslash}beta,\,
+ \ensuremath{\backslash}pi,\, while} \ensuremath{ordinary}
+ \ensuremath{English} \ensuremath{words (e.g. sum ,\, max ) must}
+ \ensuremath{be
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{left} \ensuremath{alone. Note} \ensuremath{how} \ensuremath{the}
+ \ensuremath{same} \ensuremath{names} \ensuremath{also} \ensuremath{appear}
+ \ensuremath{inside} \ensuremath{the} \ensuremath{comments}
+ \ensuremath{below,\,
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{which} \ensuremath{TLATeX} \ensuremath{scans} \ensuremath{for}
+ \ensuremath{TLA} \ensuremath{tokens.
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} GreekOperators}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Reals}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Greek\.{-}letter} \ensuremath{identifiers} \ensuremath{that}
+ \ensuremath{SHOULD} \ensuremath{map} \ensuremath{to} \ensuremath{TeX}
+ \ensuremath{symbols.
+}}%
+\@xx{}%
+ \@x{ {\CONSTANTS} alpha ,\, beta ,\, gamma ,\, delta ,\, epsilon ,\, theta
+ ,\, lambda ,\,}%
+ \@x{ mu ,\, nu ,\, pi ,\, rho ,\, sigma ,\, tau ,\, phi ,\, chi ,\, psi ,\,
+ omega}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Uppercase} \ensuremath{variants (\ensuremath{\backslash}Gamma,\,
+ \ensuremath{\backslash}Delta,\, \ensuremath{\backslash}Sigma,\,
+ \ensuremath{\backslash}Omega,\, \.{\dots}).
+}}%
+\@xx{}%
+ \@x{ {\CONSTANTS} Gamma ,\, Delta ,\, Lambda ,\, Sigma ,\, Phi ,\, Psi ,\,
+ Omega}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Ordinary} \ensuremath{words} \ensuremath{that} \ensuremath{must}
+ \ensuremath{NOT} \ensuremath{be} \ensuremath{turned} \ensuremath{into}
+ \ensuremath{symbols} \ensuremath{even} \ensuremath{though} \ensuremath{they}
+ \ensuremath{are
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{valid} \ensuremath{identifiers\.{:} sum,\, max,\, min,\, log,\,
+ sin,\, cos.
+}}%
+\@xx{}%
+\@x{ {\VARIABLES} sum ,\, max ,\, min}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Mixed} \ensuremath{expression\.{:} a} \ensuremath{linear}
+ \ensuremath{combination} \ensuremath{alpha\.{*}x \.{+} beta\.{*}y \.{+}
+ gamma\.{*}z.
+}}%
+\@xx{}%
+ \@x{ LinearCombo ( x ,\, y ,\, z ) \.{\defeq} alpha \.{*} x \.{+} beta \.{*}
+ y \.{+} gamma \.{*} z}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Circle} \ensuremath{circumference} \ensuremath{2\.{*}pi\.{*}r
+ \.{\mm} here} \ensuremath{pi} \ensuremath{should} \ensuremath{become}
+ \ensuremath{\ensuremath{\backslash}pi} \ensuremath{but} \ensuremath{r}
+ \ensuremath{stays} \ensuremath{r.
+}}%
+\@xx{}%
+\@x{ Circumference ( r ) \.{\defeq} 2 \.{*} pi \.{*} r}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Greek} \ensuremath{letters} \ensuremath{used}
+ \ensuremath{inside} \ensuremath{quantifiers} \ensuremath{and}
+ \ensuremath{set} \ensuremath{constructors (the} \ensuremath{bound
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{variables} \ensuremath{are} \ensuremath{plain}
+ \ensuremath{names} \ensuremath{so} \ensuremath{they} \ensuremath{don} t
+ shadow the \ensuremath{Greek} constants).
+}%
+\@xx{}%
+\@x{ SmallAngles \.{\defeq} \{ r \.{\in} Real \.{:} r \.{\leq} pi \}}%
+\@x{ Rotation \.{\defeq} \E\, r \.{\in} Real \.{:} r \.{+} psi \.{=} omega}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Ambiguity check: \ensuremath{nu (uncommon) vs} \ensuremath{min \.{/} max
+ (common} \ensuremath{words). Only} \ensuremath{the
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{uncommon} \ensuremath{Greek} \ensuremath{identifiers}
+ \ensuremath{should} \ensuremath{be} \ensuremath{symbolized,\, including}
+ \ensuremath{this} \ensuremath{reference
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{to} \ensuremath{sigma} \ensuremath{and} \ensuremath{tau}
+ \ensuremath{appearing} \ensuremath{inside} \ensuremath{a}
+ \ensuremath{comment.
+}}%
+\@xx{}%
+\@x{ Spectrum \.{\defeq} sigma \.{+} tau \.{+} mu \.{+} nu \.{+} chi}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Uppercase} \ensuremath{Greek} \ensuremath{in} \ensuremath{a}
+ \ensuremath{summation\.{-}like} \ensuremath{context.
+}}%
+\@xx{}%
+ \@x{ Aggregate \.{\defeq} Gamma \.{+} Delta \.{+} Sigma \.{+} Omega \.{+}
+ Lambda \.{+} Phi \.{+} Psi}%
+\@pvspace{8.0pt}%
+\@x{ Init \.{\defeq} \.{\land} sum \.{=} 0}%
+\@x{ \.{\land} max \.{=} 0}%
+\@x{ \.{\land} min \.{=} 0}%
+\@pvspace{8.0pt}%
+ \@x{ Next \.{\defeq} \.{\land} sum \.{'} \.{=} sum \.{+} LinearCombo ( alpha
+ ,\, beta ,\, gamma )}%
+\@x{ \.{\land} max \.{'} \.{=} max}%
+\@x{ \.{\land} min \.{'} \.{=} min}%
+\@pvspace{8.0pt}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} sum ,\, max
+ ,\, min {\rangle}}}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

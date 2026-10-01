@@ -1,0 +1,130 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This spec enumerates the different operator \ensuremath{\.{*}fixities\.{*}}
+ and shapes \ensuremath{TLATeX} must
+ recognize when deciding what can be rewritten into a \ensuremath{TeX} macro:
+ prefix, infix,
+ postfix, higher-order (operator-valued) parameters, and user-defined symbolic
+ operators. It is a map of the parsing surface, not a semantic model.
+\end{cpar}%
+\end{lcom}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} OperatorZoo}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers}%
+\@pvspace{8.0pt}%
+\@x{ {\CONSTANTS} x ,\, y ,\, z}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} User-defined named operators of varying arity \cdash{24}
+}%
+\@xx{}%
+\@x{ Nullary \.{\defeq} 42}%
+\@x{ Unary ( a ) \.{\defeq} a}%
+\@x{ Binary ( a ,\, b ) \.{\defeq} a \.{+} b}%
+\@x{ Ternary ( a ,\, b ,\, c ) \.{\defeq} a \.{+} b \.{+} c}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Higher-order operators (operator-valued parameters) \cdash{18}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{op (\_,\, \_) is} \ensuremath{itself} \ensuremath{an}
+ \ensuremath{operator} \ensuremath{argument;} \ensuremath{the}
+ \ensuremath{parser} \ensuremath{must} \ensuremath{not} \ensuremath{confuse}
+ \ensuremath{the
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{placeholder} \ensuremath{underscores} \ensuremath{with}
+ \ensuremath{real} \ensuremath{arguments.
+}}%
+\@xx{}%
+\@x{ Apply2 ( op ( \_ ,\, \_ ) ,\, a ,\, b ) \.{\defeq} op ( a ,\, b )}%
+\@x{ Map ( op ( \_ ) ,\, s ) \.{\defeq} \{ op ( e ) \.{:} e \.{\in} s \}}%
+\@x{ Fold ( op ( \_ ,\, \_ ) ,\, seed ,\, s ) \.{\defeq} seed}%
+\@pvspace{8.0pt}%
+ \@x{ UsesHof \.{\defeq} Apply2 ( Binary ,\, 1 ,\, 2 ) \.{+} Map ( Unary ,\,
+ \{ x ,\, y ,\, z \} ) \.{=} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{\cdash{3}} \ensuremath{Infix} \ensuremath{user}
+ \ensuremath{operators (symbolic) \cdash{38}
+}}%
+\@xx{}%
+\@x{ a \.{\oplus} b \.{\defeq} a \.{+} b}%
+\@x{ a \.{\otimes} b \.{\defeq} a \.{*} b}%
+\@x{ a \.{\odot} b \.{\defeq} a \.{-} b}%
+\@x{ a \.{\sqcup} b \.{\defeq} {\IF} a \.{>} b \.{\THEN} a \.{\ELSE} b}%
+\@pvspace{8.0pt}%
+\@x{ InfixUse \.{\defeq} ( x \.{\oplus} y ) \.{\otimes} ( z \.{\odot} x )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{\cdash{3}} \ensuremath{Prefix} \ensuremath{and}
+ \ensuremath{postfix} \ensuremath{built\.{-}ins} \ensuremath{mixed}
+ \ensuremath{with} \ensuremath{user} \ensuremath{operators}
+ \ensuremath{\cdash{15}
+}}%
+\@xx{}%
+\@x{ Neg ( a ) \.{\defeq} \.{-} a}%
+\@y{\@s{0}%
+ \ensuremath{prefix} \ensuremath{minus
+}}%
+\@xx{}%
+\@x{ Fact ( a ) \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{stand\.{-}in} \ensuremath{for} \ensuremath{a}
+ \ensuremath{postfix} \ensuremath{factorial} \ensuremath{a{\bang}
+}}%
+\@xx{}%
+\@x{ Primed \.{\defeq} x \.{'}}%
+\@y{\@s{0}%
+ \ensuremath{postfix} \ensuremath{prime
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{\cdash{3}} \ensuremath{Mixfix\.{-}style} \ensuremath{bracketing}
+ \ensuremath{that} \ensuremath{a} \ensuremath{macro} \ensuremath{rewrite}
+ \ensuremath{might} \ensuremath{target} \ensuremath{\cdash{12}
+}}%
+\@xx{}%
+\@x{ Floor ( a ) \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow} \ensuremath{\backslash}lfloor} \ensuremath{a}
+ \ensuremath{\ensuremath{\backslash}rfloor
+}}%
+\@xx{}%
+\@x{ Ceil ( a ) \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow} \ensuremath{\backslash}lceil} \ensuremath{a}
+ \ensuremath{\ensuremath{\backslash}rceil
+}}%
+\@xx{}%
+\@x{ Bracket ( a ) \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow} \ensuremath{\backslash}langle} \ensuremath{a}
+ \ensuremath{\ensuremath{\backslash}rangle
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ Mixfix \.{\defeq} Floor ( x ) \.{+} Ceil ( y ) \.{+} Bracket ( z )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{\cdash{3}} \ensuremath{Operators} \ensuremath{appearing}
+ \ensuremath{as} \ensuremath{arguments} \ensuremath{to} \ensuremath{other}
+ \ensuremath{operators} \ensuremath{\cdash{18}
+}}%
+\@xx{}%
+\@x{ Compose ( f ( \_ ) ,\, g ( \_ ) ,\, a ) \.{\defeq} f ( g ( a ) )}%
+\@x{ Composed \.{\defeq} Compose ( Neg ,\, Fact ,\, x )}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%
