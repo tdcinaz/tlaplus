@@ -101,6 +101,11 @@ final class TokenRenderer
             return " " + Misc.TeXify(tok.string);
 
         case Token.IDENT:
+            String symbol = Directives.active.symbolFor(tok.string);
+            if (symbol != null)
+            {
+                return " {" + symbol + "}";
+            }
             return " " + Misc.TeXifyIdent(tok.string);
 
         case Token.PCAL_LABEL:

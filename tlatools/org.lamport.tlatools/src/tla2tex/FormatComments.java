@@ -1931,7 +1931,11 @@ public final class FormatComments
                  break ;
 
                case CToken.IDENT :
-                 curOutput = curOutput + Misc.TeXifyIdent(tok.string);
+                 String symbol = tok.isTLA ? Directives.active.symbolFor(tok.string) : null;
+                 if (symbol != null)
+                  { curOutput = curOutput + "{" + symbol + "}"; }
+                 else
+                  { curOutput = curOutput + Misc.TeXifyIdent(tok.string); } ;
                  break ;
 
                case CToken.OTHER :
