@@ -145,9 +145,9 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
       * "---- MODULE foo ----" but not the second.                         *
       *********************************************************************/
 
-    boolean inSub = false;
+    TokenRenderer renderer = new TokenRenderer();
          /******************************************************************
-         * True while putting out sub/superscript tokens.                  *
+         * Renders the tokens and tracks open sub/superscripts.            *
          ******************************************************************/
       
     while (line < spec.length)
@@ -169,89 +169,20 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
             * The current token.                                           *
             ***************************************************************/
 
-          if (inSub && (! tok.subscript))
-            { /*************************************************************
-              * The current subcript has ended; close the command's "}".   *
-              *************************************************************/
-              inSub = false ;
-              outLine = outLine + "}";
-            } ;
-               
+          outLine = outLine + renderer.closeSubBefore(tok);
+
            if (tok.isAlignmentPoint)
               { outLine = outLine + "}" + Parameters.LaTeXAlignPoint + "{"
                             + line + "}{" + item + "}{" ; 
               };
           switch (tok.type)
            { case Token.BUILTIN :
-               int symType = BuiltInSymbols.GetBuiltInSymbol(
-                                       spec[line][item].string, true).symbolType ;
-                 /**********************************************************
-                 * Check if we should start a sub/superscript.             *
-                 **********************************************************/
-                 if (   (! inSub)
-                     && (   (symType == Symbol.SUBSCRIPTED)
-                         || tok.string.equals("^"))
-                     && (item + 1 < spec[line].length)
-                     && spec[line][item+1].subscript )
-                        /***************************************************
-                        * A subscripted/superscrip symbol (like "]_" or    *
-                        * "^") begins a sub/superscript iff it is          *
-                        * followed by a subscript token on the same line.  *
-                        ***************************************************/
-                  { /*******************************************************
-                    * This starts a sub or superscript.                    *
-                    *******************************************************/
-                    inSub = true ;
-                    if (symType == Symbol.SUBSCRIPTED)
-                     { /****************************************************
-                       * It's a subscript.                                 *
-                       ****************************************************/
-                       outLine = outLine + " " +  
-                          BuiltInSymbols.GetBuiltInSymbol(
-                                                   tok.string, true).TeXString
-                          + "_{";
-                     }    
-                    else
-                     { /****************************************************
-                       * It's a superscript.                               *
-                       ****************************************************/
-                       outLine = outLine + " " + "^{";
-                     }    
-                  } // END then OF if if (   (! inSub) ... )
-                 else
-                  { /*******************************************************
-                    * Not a sub/superscript.  Output a space followed by   *
-                    * the symbol.  (It's always safe to put a space in a   *
-                    * specification line, since it's typeset in math       *
-                    * mode.                                                *
-                    *******************************************************/
-                    outLine = outLine + " " +  
-                     BuiltInSymbols.GetBuiltInSymbol(tok.string, true).TeXString;
-                  }; // END else OF if if (   (! inSub) ... )
-               break ;
-
              case Token.NUMBER :
              case Token.IDENT :
-               outLine = outLine + " " + Misc.TeXify(tok.string) ; 
-                 /**********************************************************
-                 * We TeXify the string to typeset a "\" from a number or  *
-                 * a "_" from an identifier.                               *
-                 **********************************************************/
-               break ;
-               
              case Token.PCAL_LABEL :
-               outLine = outLine + " " + Misc.TeXifyPcalLabel(tok.string) ;
-               break ;
-
              case Token.STRING :
-               outLine = outLine + Parameters.LaTeXStringCommand + "{"  
-                           + FixString(tok.string) + "}";
-               break ;
-
              case Token.PF_STEP :
-               outLine = outLine + PfStepString(tok.string) ;
-               if ( ((Token.PfStepToken) tok).needsSpace )
-                 {outLine = outLine + "\\ "; } ;
+               outLine = outLine + renderer.render(spec[line], item);
                break ;
 
              case Token.COMMENT :
@@ -352,13 +283,10 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
        /********************************************************************
        * End the current line.                                             *
        ********************************************************************/
-       if (inSub) 
-        { /*****************************************************************
-          * If inside a sub/superscript, have to close the "^{" or "_{".   *
-          *****************************************************************/
-          outLine = outLine + "}";
-          inSub = false ;
-        };         
+       /********************************************************************
+       * If inside a sub/superscript, have to close the "^{" or "_{".      *
+       ********************************************************************/
+       outLine = outLine + renderer.closeSub();
        outLine = outLine + "}";
        Misc.BreakStringOut(writer, outLine);
        line = line + 1;
@@ -781,7 +709,7 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
       return spaceToLeft + TotalIndent(spec, pos) ;
   }
   
-  private static String FixString(String inputStr)
+  static String FixString(String inputStr)
     /***********************************************************************
     * Result is Misc.TeXify(str) with spaces replaced by "\ " and "-"      *
     * replaced by {-}.                                                     *
@@ -934,9 +862,9 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
 
   boolean done = false ;
 
-  boolean inSub = false;
+  TokenRenderer renderer = new TokenRenderer();
     /***********************************************************************
-    * True while putting out sub/superscript tokens.                       *
+    * Renders the tokens and tracks open sub/superscripts.                 *
     ***********************************************************************/
  
   boolean hasPcal = TokenizeSpec.hasPcal ;
@@ -1145,13 +1073,7 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
             * The current token and its position.                          *
             ***************************************************************/
   
-          if (inSub && (! tok.subscript))
-            { /*************************************************************
-              * The current subcript has ended; close the command's "}".   *
-              *************************************************************/
-              inSub = false ;
-              outLine = outLine + "}";
-            } ;
+          outLine = outLine + renderer.closeSubBefore(tok);
                
           /*****************************************************************
           * Write the command to produce the preSpace space.               *
@@ -1164,64 +1086,12 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
           switch (tok.type)
            { // BEGIN switch (tok.type)
              case Token.BUILTIN :
-               int symType = BuiltInSymbols.GetBuiltInSymbol(
-                                       spec[line][item].string, true).symbolType ;
-                 if (   (! inSub)
-                     && (   (symType == Symbol.SUBSCRIPTED)
-                         || tok.string.equals("^"))
-                     && (item + 1 < spec[line].length)
-                     && spec[line][item+1].subscript )
-                  { /*******************************************************
-                    * This starts a sub or superscript.                    *
-                    *******************************************************/
-                    inSub = true ;
-                    if (symType == Symbol.SUBSCRIPTED)
-                     { /****************************************************
-                       * It's a subscript.                                 *
-                       ****************************************************/
-                       outLine = outLine + " " +  
-                          BuiltInSymbols.GetBuiltInSymbol(
-                                                   tok.string, true).TeXString
-                          + "_{";
-                     }    
-                    else
-                     { /****************************************************
-                       * It's a superscript.                               *
-                       ****************************************************/
-                       outLine = outLine + " " + "^{";
-                     }    
-                  } // END then OF if (   (! inSub) ... )
-                 else
-                  { outLine = outLine + " " +  
-                     BuiltInSymbols.GetBuiltInSymbol(tok.string, true).TeXString;
-                  }; // END else OF if (   (! inSub) ... )
-               break ;
-  
              case Token.NUMBER :
-               /**************************************************************
-               * A number can begin with a '\'.  Won't bother optimizing     *
-               * for this special case of TeXify'ing.                        *
-               **************************************************************/
-               outLine = outLine + " " + Misc.TeXify(tok.string) ; 
-               break ;
-  
              case Token.IDENT :
-               outLine = outLine + " " + Misc.TeXifyIdent(tok.string) ; 
-               break ;
-
              case Token.PCAL_LABEL :
-               outLine = outLine + " " + Misc.TeXifyPcalLabel(tok.string) ;
-               break ;
-               
              case Token.STRING :
-               outLine = outLine + Parameters.LaTeXStringCommand + "{"  
-                          + FixString(tok.string) + "}";
-               break ;
-  
              case Token.PF_STEP :
-               outLine = outLine + PfStepString(tok.string) ;
-               if ( ((Token.PfStepToken) tok).needsSpace )
-                 {outLine = outLine + "\\ "; } ;
+               outLine = outLine + renderer.render(spec[line], item);
                break ;
 
              case Token.COMMENT :
@@ -1541,14 +1411,13 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
          };                // END while ((! done) && (item < spec[line].length))
        };                 // END if (! issueVSpace)
   
-      if (inSub) 
+      if (renderer.inSub()) 
        { /*****************************************************************
          * If inside a sub/superscript, have to close the "^{" or "_{".   *
          *****************************************************************/
          Debug.Assert(outLine != null,
                          "Unclosed sub/superscript command at end of line") ;
-         outLine = outLine + "}";
-         inSub = false ;
+         outLine = outLine + renderer.closeSub();
        };         
   
       if (openLine)
