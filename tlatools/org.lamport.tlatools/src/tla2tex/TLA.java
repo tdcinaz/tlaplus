@@ -124,6 +124,8 @@ package tla2tex;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import util.FileUtil;
 import util.TLAConstants;
@@ -200,10 +202,11 @@ public class TLA
         Finished("TokenizeSpec.FixPlusCal");
 
         /*********************************************************************
-        * Read the "@tlatex:" directives and remove their lines.             *
+        * Read the "@tlatex:" directives, find the operator applications     *
+        * that macro directives typeset, and remove the directive lines.     *
         *********************************************************************/
         Starting("Directives.prepare");
-        spec = Directives.prepare(spec);
+        spec = Directives.prepare(spec, TLA::readInputFile);
         Finished("Directives.prepare");
 
         /*********************************************************************
@@ -228,6 +231,12 @@ public class TLA
         FindAlignments.FindAlignments(spec);
         Finished("FindAlignments.FindAlignments");
         // Debug.print2DArray(spec, "align");
+
+        /*********************************************************************
+        * Drop macro applications that alignment makes unsafe, and hide the  *
+        * tokens the remaining macros print.                                 *
+        *********************************************************************/
+        MacroSpans.finish(spec);
 
         /*********************************************************************
         * Write out the tla file with deleted comments removed, if the       *
@@ -302,6 +311,19 @@ public class TLA
         }
         Debug.printElapsedTime(startTime, "Total execution time:");
     } // END main
+
+    /** The bytes of the input file, for SANY. */
+    private static byte[] readInputFile()
+    {
+        try
+        {
+            return Files.readAllBytes(Paths.get(Parameters.TLAInputFile));
+        } catch (IOException e)
+        {
+            Debug.ReportError("Could not read input file " + Parameters.TLAInputFile + ": " + e.getMessage());
+            return new byte[0];
+        }
+    }
 
     private static void GetArguments(String[] args)
     /**********************************************************************

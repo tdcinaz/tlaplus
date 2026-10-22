@@ -58,4 +58,21 @@ public class TypesetWithLaTeXTest {
             assertEquals("LaTeX errors in " + log, 0, TLA2TexTestSupport.countLatexErrors(log));
         }
     }
+
+    @Test
+    public void sourcePaddingAfterAMacroAddsNoSpace() throws IOException, InterruptedException {
+        Path workDir = Files.createDirectory(workRoot.resolve("Pad"));
+        TLA2TexTestSupport.writeFile(workDir.resolve("Pad.tla"), String.join("\n",
+            "---- MODULE Pad ----",
+            "\\* @tlatex: macro Sqrt/1 \\sqrt{#1}",
+            "A == Sqrt(2)      + Foo(2)      + 1",
+            "===="));
+        TLA2TexTestSupport.CliResult result = TLA2TexTestSupport.runCli(workDir,
+            "-latexCommand", "pdflatex", "-nops", "Pad.tla");
+        assertEquals(result.output, 0, result.exitCode);
+        String tex = TLA2TexTestSupport.readFile(workDir.resolve("Pad.tex"));
+        // The spaces after Sqrt(2) padded the source text, which the macro replaces;
+        // the same spaces after Foo(2) still widen the output as they always have.
+        assertTrue(tex, tex.contains("\\sqrt{{2}} \\.{+} Foo ( 2 )\\@s{"));
+    }
 }

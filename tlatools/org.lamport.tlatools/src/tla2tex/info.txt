@@ -7,6 +7,7 @@ CONTENTS
   HOW TLATeX TYPESETS COMMENTS
   TROUBLESHOOTING
   USING LaTeX COMMANDS IN COMMENTS
+  TYPESETTING IDENTIFIERS AS SYMBOLS AND OPERATORS AS MACROS
 
 
 INTRODUCTION 
@@ -473,3 +474,59 @@ that follows the ^'.)
 | cause TLATeX not to produce any output.  See the section above  |
 | on Trouble-Shooting                                             |
  -----------------------------------------------------------------
+
+
+TYPESETTING IDENTIFIERS AS SYMBOLS AND OPERATORS AS MACROS
+----------------------------------------------------------
+A comment line whose text begins with "@tlatex:" is a TLATeX
+directive.  Directives may appear on any comment line of the module,
+and in the text before and after the module; each applies to the whole
+module.  Directive lines are not typeset, and they are omitted from the
+-tlaOut file.  Lines for other tools, such as "@type:", are left alone.
+There are three directives:
+
+   \* @tlatex: symbol alpha \alpha
+      Typesets the identifier alpha as the TeX \alpha, wherever it
+      appears in the specification and wherever it appears in a
+      comment as a TLA+ symbol.  Only the whole identifier is
+      replaced: alpha1 and alpha_x are unaffected, while alpha' and
+      WF_alpha(A) work as usual.
+
+   \* @tlatex: preset greek
+      Declares "symbol" directives for the names of the Greek letters:
+      alpha ... omega, the var- forms such as varepsilon, and Gamma ...
+      Omega.  An explicit "symbol" directive overrides the preset.
+
+   \* @tlatex: macro Integral/3 \int_{#2}^{#3} #1 \, dx
+      Typesets an application of Integral to 3 arguments by replacing
+      #1, #2 and #3 in the TeX template with the typeset arguments,
+      each enclosed in braces.  Write ## for a # in the template.  So
+      Integral(a + b, c, d) becomes \int_{c}^{d} a + b \, dx.
+      Definitions such as Integral(f, lo, hi) == ... are typeset the
+      same way.  The name may be qualified, as in M!Integral(...), in
+      which case the whole application is replaced.
+
+The template is TeX in math mode, so it may use only commands that
+LaTeX and the tlatex package (or the package given with -style) define.
+
+An application is typeset as a macro only if it and all its arguments
+are on a single line and it contains no comment; otherwise it is
+typeset as usual.  An application is also typeset as usual if one of
+its tokens after the first is aligned with a token on another line.
+The -debug option reports each application typeset as usual and why.
+Applications inside a PlusCal algorithm or inside comments are always
+typeset as usual.
+
+To find the arguments, TLATeX parses the module with SANY's parser (it
+does not need the modules the spec extends).  If the module does not
+parse, no macro directive is applied and TLATeX prints a warning naming
+the first syntax error; symbol directives still apply.
+
+The option "-directives fileName" reads directive lines from fileName
+as well.  Each line of the file is a directive, with or without a
+leading \*, or a blank line.  Use it to share one set of directives
+among several modules.
+
+A directive TLATeX does not understand, such as a template that uses #3
+for an operator with 2 arguments, is reported as a warning with its
+line number and ignored.

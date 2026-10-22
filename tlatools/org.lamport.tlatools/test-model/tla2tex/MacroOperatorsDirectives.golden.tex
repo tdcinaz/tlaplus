@@ -1,0 +1,129 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This is \ensuremath{MacroOperators.tla} with macro directives added after the
+ module
+ header. Each single-line application (and definition) of a directive\mbox{'}s
+ operator is typeset with the directive\mbox{'}s \ensuremath{TeX} template,
+ its arguments
+ located by \ensuremath{SANY}. Compare its output with
+ \ensuremath{MacroOperators.golden.tex}.
+\end{cpar}%
+\end{lcom}%
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ MacroOperatorsDirectives}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Reals}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Operators intended to become \ensuremath{TeX} macros with sub/superscripts.
+}%
+\@xx{}%
+\@x{ \int_{{lo}}^{{hi}} {f} \, dx \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}int\_\ensuremath{\{lo\}\.{\ct}\{hi\} f
+ \.{\,\backslash\,}}, dx
+}%
+\@xx{}%
+\@x{ \sum_{{lo}}^{{hi}} {term} \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}sum\_\ensuremath{\{lo\}\.{\ct}\{hi\}} term
+}%
+\@xx{}%
+\@x{ \prod_{{lo}}^{{hi}} {term} \.{\defeq} hi \.{-} lo}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}prod\_\ensuremath{\{lo\}\.{\ct}\{hi\}} term
+}%
+\@xx{}%
+\@x{ \sqrt{{x}} \.{\defeq} x}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}sqrt\ensuremath{\{x\}
+}}%
+\@xx{}%
+\@x{ \frac{{a}}{{b}} \.{\defeq} a}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}}
+ \ensuremath{\backslash}frac\ensuremath{\{a\}\{b\}
+}}%
+\@xx{}%
+\@x{ {base}^{{exp}} \.{\defeq} base}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow} base\.{\ct}\{exp\}
+}}%
+\@xx{}%
+\@x{ \| {v} \| \.{\defeq} v}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}lVert \ensuremath{v}
+ \ensuremath{\backslash}rVert
+}%
+\@xx{}%
+\@x{ \vert {x} \vert \.{\defeq} x}%
+\@y{\@s{0}%
+ \ensuremath{\.{\rightarrow}} \ensuremath{\backslash}lvert \ensuremath{x}
+ \ensuremath{\backslash}rvert
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Single-argument call.
+}%
+\@xx{}%
+\@x{ A \.{\defeq} \sqrt{{2}}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Multi-argument calls: arguments are simple atoms.
+}%
+\@xx{}%
+\@x{ B \.{\defeq} \int_{{0}}^{{10}} {1} \, dx}%
+\@x{ C \.{\defeq} \frac{{3}}{{4}}}%
+\@x{ D \.{\defeq} {2}^{{8}}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Arguments that are themselves compound expressions containing commas-in-sets
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ and parentheses -- the parser must not mistake the inner comma/parens for
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ argument separators.
+}%
+\@xx{}%
+\@x{ E \.{\defeq} \int_{{0}}^{{10}} {2 \.{*} 3 \.{+} 1} \, dx}%
+\@x{ F \.{\defeq} \sum_{{1}}^{{100}} {( 1 \.{+} 2 ) \.{*} 3}}%
+\@x{ G \.{\defeq} \frac{{\vert {\.{-} 5} \vert}}{{\| {7} \|}}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ A set literal inside an argument: the commas here are NOT argument
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ separators of \ensuremath{Product}.
+}%
+\@xx{}%
+ \@x{ H \.{\defeq} \prod_{{1}}^{{5}} {\{ 1 ,\, 2 ,\, 3 \} \.{=} \{ 1 ,\, 2 ,\,
+ 3 \}}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Realistic combination mirroring the \ensuremath{README} example
+ \ensuremath{\backslash}int\ensuremath{\.{\ct}\{a\.{+}b\}}\_\ensuremath{\{c\}
+ d}.
+}%
+\@xx{}%
+ \@x{ Example ( a ,\, b ,\, c ,\, d ) \.{\defeq} \int_{{c}}^{{d}} {a \.{+} b}
+ \, dx}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

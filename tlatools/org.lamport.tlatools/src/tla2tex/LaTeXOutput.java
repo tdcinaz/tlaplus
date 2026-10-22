@@ -169,6 +169,14 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
             * The current token.                                           *
             ***************************************************************/
 
+          if (tok.hiddenByMacro)
+            { /*************************************************************
+              * Printed by the macro of an earlier token on this line.     *
+              *************************************************************/
+              item = item + 1;
+              continue;
+            } ;
+
           outLine = outLine + renderer.closeSubBefore(tok);
 
            if (tok.isAlignmentPoint)
@@ -517,6 +525,13 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
       Token tok = pc.toToken(spec) ;
       Debug.Assert(tok.preSpace == 0,
            "preSpace already computed when it shouldn't have been");
+      if (tok.hiddenByMacro)
+        { /*****************************************************************
+          * Not printed on its own, so it adds no space.                   *
+          *****************************************************************/
+          nextPos = nextPos + 1;
+          continue;
+        } ;
       if (tok.belowAlign.line != -1)
            { /**************************************************************
              * tok begins an inner-alignment.                              *
@@ -562,7 +577,7 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
                  || (   (pc.item == 1)
                      && (spec[pc.line][0].type != Token.COMMENT)))
                { ltok = spec[pc.line][pc.item - 1] ;
-                 extraSpace = tok.column - (ltok.column + ltok.getWidth());
+                 extraSpace = SourceGap(ltok, tok);
                };
              alPos = tok.belowAlign ;
              while (alPos.line != -1)
@@ -570,8 +585,7 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
                     || (   (alPos.item == 1)
                         && (spec[alPos.line][0].type != Token.COMMENT)))
                   { ltok = spec[alPos.line][alPos.item - 1] ;
-                    int sp = alPos.toToken(spec).column 
-                                   - (ltok.column + ltok.getWidth());
+                    int sp = SourceGap(ltok, alPos.toToken(spec));
                     if (sp <  extraSpace) { extraSpace = sp ;};
                   };
                 alPos = alPos.toToken(spec).belowAlign ;
@@ -611,8 +625,7 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
                      * token and the one to its left.                      *
                      ******************************************************/
                      Token ltok = spec[pc.line][pc.item - 1] ;
-                     int extraSpace = 
-                          tok.column - (ltok.column + ltok.getWidth()) - 1;
+                     int extraSpace = SourceGap(ltok, tok) - 1;
                      if (extraSpace > 0)
                       { tok.preSpace = 
                            Parameters.LaTeXLeftSpace(extraSpace) ; };
@@ -673,6 +686,18 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
       { nextChar = nextChar + 1; };
      return Misc.stringToFloat(str.substring(start,nextChar));
    } ;
+
+  private static int SourceGap(Token ltok, Token tok)
+    /***********************************************************************
+    * The number of columns between the end of ltok and the start of tok   *
+    * in the input.  If ltok ends an application typeset as a macro, the   *
+    * spaces after it were laid out for the application's source text,    *
+    * not for the macro, so they count as a single space.                  *
+    ***********************************************************************/
+    { if (ltok.hiddenByMacro)
+        { return 1; } ;
+      return tok.column - (ltok.column + ltok.getWidth());
+    }
 
   private static float TotalIndent(Token[][] spec, Position pos)
     /***********************************************************************
@@ -1073,6 +1098,14 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
             * The current token and its position.                          *
             ***************************************************************/
   
+          if (tok.hiddenByMacro)
+            { /*************************************************************
+              * Printed by the macro of an earlier token on this line.     *
+              *************************************************************/
+              item = item + 1;
+              continue;
+            } ;
+
           outLine = outLine + renderer.closeSubBefore(tok);
                
           /*****************************************************************

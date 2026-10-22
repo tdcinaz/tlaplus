@@ -7,7 +7,9 @@ package tla2tex;
  * epilog are laid out by the writers in {@link LaTeXOutput} themselves.
  *
  * <p>Both the alignment writer and the final writer use this class, so the
- * alignment run measures exactly what the output prints. An instance tracks
+ * alignment run measures exactly what the output prints. That includes the
+ * TeX of an operator application typeset as a macro (see {@link MacroSpans}),
+ * which is printed for its first token. An instance tracks
  * whether a sub/superscript opened by a {@code ]_}, {@code WF_} or {@code ^}
  * token is still open; use one instance per line (or per argument).
  */
@@ -67,6 +69,10 @@ final class TokenRenderer
     String render(Token[] line, int item)
     {
         Token tok = line[item];
+        if (tok.macro != null)
+        {
+            return " " + renderMacro(tok.macro);
+        }
         switch (tok.type)
         {
         case Token.BUILTIN:
@@ -126,5 +132,49 @@ final class TokenRenderer
             Debug.ReportBug("TokenRenderer.render called on a token of type " + tok.type);
             return "";
         }
+    }
+
+    /** The macro's template with each {@code #k} replaced by the TeX of argument k. */
+    private static String renderMacro(MacroSpans.Application app)
+    {
+        String[] args = new String[app.args.length];
+        for (int k = 0; k < args.length; k++)
+        {
+            args[k] = renderTokens(app.args[k]);
+        }
+        return app.macro.instantiate(args);
+    }
+
+    /** The TeX for a sequence of tokens from one line, such as a macro argument. */
+    private static String renderTokens(Token[] toks)
+    {
+        TokenRenderer renderer = new TokenRenderer();
+        StringBuilder out = new StringBuilder();
+        int i = 0;
+        while (i < toks.length)
+        {
+            Token tok = toks[i];
+            out.append(renderer.closeSubBefore(tok));
+            out.append(renderer.render(toks, i));
+            int next = i + 1;
+            if (tok.macro != null)
+            {
+                /***********************************************************
+                * A nested macro printed its own arguments; skip to the    *
+                * token after its closing parenthesis.                     *
+                ***********************************************************/
+                for (int j = i + 1; j < toks.length; j++)
+                {
+                    if (toks[j] == tok.macro.last)
+                    {
+                        next = j + 1;
+                        break;
+                    }
+                }
+            }
+            i = next;
+        }
+        out.append(renderer.closeSub());
+        return out.toString();
     }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import util.ToolIO;
 
@@ -500,9 +501,11 @@ final class Directives
 
     /**
      * Reads the {@code -directives} file (if any) and the spec's directives
-     * into {@link #active}, and returns the spec without its directive lines.
+     * into {@link #active}, finds the applications that macro directives
+     * typeset (reading the source from {@code source} only if there are
+     * macros), and returns the spec without its directive lines.
      */
-    static Token[][] prepare(Token[][] spec)
+    static Token[][] prepare(Token[][] spec, Supplier<byte[]> source)
     {
         Directives d = new Directives();
         if (!Parameters.DirectivesFile.equals(""))
@@ -515,6 +518,10 @@ final class Directives
         {
             ToolIO.out.println("TLATeX directives: symbols " + d.symbols + ", preset symbols "
                                + d.presetSymbols.size() + ", macros " + d.macros.values());
+        }
+        if (d.hasMacros())
+        {
+            MacroSpans.find(source.get(), spec, d);
         }
         return removeDirectives(spec);
     }

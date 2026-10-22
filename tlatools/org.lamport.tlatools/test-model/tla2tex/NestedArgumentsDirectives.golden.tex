@@ -1,0 +1,86 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This is \ensuremath{NestedArguments.tla} with macro directives added after
+ the module
+ header. Nested single-line applications become nested macros;
+ \ensuremath{N3} spans
+ several lines, so in phase 1 it is typeset as without directives.
+\end{cpar}%
+\end{lcom}%
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ NestedArgumentsDirectives}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Reals ,\, Sequences}%
+\@pvspace{8.0pt}%
+\@x{ \int_{{lo}}^{{hi}} {f} \, dx \.{\defeq} hi \.{-} lo}%
+\@x{ \sum_{{lo}}^{{hi}} {term} \.{\defeq} hi \.{-} lo}%
+\@x{ \sqrt{{x}} \.{\defeq} x}%
+\@x{ \frac{{a}}{{b}} \.{\defeq} a}%
+\@x{ {base}^{{exp}} \.{\defeq} base}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Nested to three levels; each inner call is one argument of the outer call.
+}%
+\@xx{}%
+\@x{ N1 \.{\defeq} \int_{{0}}^{{10}} {\sqrt{{{2}^{{4}}}}} \, dx}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Inner call appears inside an arithmetic argument.
+}%
+\@xx{}%
+ \@x{ N2 \.{\defeq} \int_{{0}}^{{{2}^{{3}}}} {\sqrt{{9}} \.{+}
+ \frac{{1}}{{2}}} \, dx}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Multi-line call: the argument list is split across several lines and the
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ parser must join them before locating commas.
+}%
+\@xx{}%
+\@x{ N3 \.{\defeq} Sum (}%
+\@x{ \frac{{1}}{{{2}^{{3}}}} \.{+} \sqrt{{16}} ,\,}%
+\@x{ 1 ,\,}%
+\@x{ 100}%
+\@x{ )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Function application brackets inside an argument: \ensuremath{seq[i]} and
+ \ensuremath{record.field
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ must not be treated as argument boundaries.
+}%
+\@xx{}%
+\@x{ {\LOCAL} seq \.{\defeq} {\langle} 10 ,\, 20 ,\, 30 {\rangle}}%
+\@x{ {\LOCAL} rec \.{\defeq} [ re \.{\mapsto} 1 ,\, im \.{\mapsto} 2 ]}%
+ \@x{ N4 \.{\defeq} \int_{{0}}^{{Len ( seq )}} {seq [ 2 ] \.{+} rec . im} \,
+ dx}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Tuple as a single argument -- its inner comma is not a separator.
+}%
+\@xx{}%
+ \@x{ N5 \.{\defeq} \frac{{{\langle} 1 ,\, 2 {\rangle} \.{=} {\langle} 1 ,\, 2
+ {\rangle}}}{{3}}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Doubly nested with a compound superscript, mirroring
+ \ensuremath{\backslash}int\ensuremath{\.{\ct}\{a\.{+}b\}}\_\ensuremath{\{c\}}.
+}%
+\@xx{}%
+ \@x{ N6 ( a ,\, b ,\, c ,\, d ) \.{\defeq} \int_{{c}}^{{\sqrt{{d}}}}
+ {{a}^{{b}} \.{+} \frac{{c}}{{d}}} \, dx}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

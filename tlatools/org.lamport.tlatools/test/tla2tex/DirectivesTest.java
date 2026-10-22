@@ -139,7 +139,7 @@ public class DirectivesTest {
             "====",
             "\\* @tlatex: symbol z \\zeta",
             "");
-        Directives.prepare(TLA2TexTestSupport.tokenize(spec));
+        Directives.prepare(TLA2TexTestSupport.tokenize(spec), () -> spec.getBytes());
         Directives d = Directives.active;
         assertEquals("\\pi_1", d.symbolFor("p1"));
         for (String[] pair : new String[][] { { "a", "\\alpha" }, { "b", "\\beta" }, { "c", "\\gamma" },
@@ -234,7 +234,8 @@ public class DirectivesTest {
             "not a directive",
             ""));
         Parameters.DirectivesFile = file.toString();
-        Directives.prepare(TLA2TexTestSupport.tokenize("---- MODULE M ----\nx == 1\n====\n"));
+        String spec = "---- MODULE M ----\nx == 1\n====\n";
+        Directives.prepare(TLA2TexTestSupport.tokenize(spec), () -> spec.getBytes());
         Directives d = Directives.active;
         assertEquals("\\alpha", d.symbolFor("alpha"));
         assertEquals("\\sqrt{#1}", d.macroFor("Sqrt", 1).template);
@@ -256,7 +257,7 @@ public class DirectivesTest {
         Token[][] toks = TLA2TexTestSupport.tokenize(spec);
         int start = TokenizeSpec.pcalStart.line;
         int end = TokenizeSpec.pcalEnd.line;
-        Directives.prepare(toks);
+        Directives.prepare(toks, () -> spec.getBytes());
         assertEquals(start - 2, TokenizeSpec.pcalStart.line);
         assertEquals(end - 2, TokenizeSpec.pcalEnd.line);
     }

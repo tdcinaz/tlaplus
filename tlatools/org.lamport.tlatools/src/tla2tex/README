@@ -42,6 +42,13 @@ POSSIBLE ENHANCEMENTS
    pro/epilog lines as TLATeX commands.  (This notation should generalize
    to arbitrary tools.)
 
+   [Implemented for single-line applications by the "@tlatex:" symbol,
+   preset and macro directives; see the last section of info.txt.
+   Instead of counting parentheses, MacroSpans.java finds the arguments
+   with SANY's parser, because commas in \A x, y : P and closers such
+   as ]_ make counting unreliable.  Multi-line applications are still
+   typeset as usual.]
+
 
 
 BUGS 
@@ -99,6 +106,16 @@ produces the correct output.
    example, something like Brxwee that would normally be italicized 
    if it occured in the middle of text is not italicized if it's
    at the beginning of the comment line (in the .tla file).
+
+5. A token that follows a built-in symbol the tokenizer had to shorten
+   gets a column one or more places too far to the right.  This happens
+   after a "(" that is followed by "-", "+", ".", "/" or "\", because
+   "(-", "(\" etc. begin the symbols "(-)", "(\X)" etc.  So in
+   "(\E x \in S : P)" the \E is recorded one column right of where it
+   is, which can change which tokens are aligned.  The cause is that the
+   BUILT_IN case of TokenizeSpec.Tokenize backs up the reader without
+   resetting ncol.  Fixing it changes the output of existing specs, so
+   for now MacroSpans corrects the columns only for its own use.
    
 ----------
   

@@ -185,6 +185,18 @@ public class Token
       * distFromMargin plus the sum of the preSpace for it and all         *
       * non-left-comment tokens to its left.                               *
       *********************************************************************/
+
+    MacroSpans.Application macro = null ;
+      /*********************************************************************
+      * Non-null on the first token of an operator application that is    *
+      * typeset as a TeX macro.  Set by MacroSpans.                        *
+      *********************************************************************/
+
+    boolean hiddenByMacro = false ;
+      /*********************************************************************
+      * True for the tokens of a macro application after its first token; *
+      * they are printed by the macro instead of on their own.             *
+      *********************************************************************/
       
     /***********************************************************************
     * Below are the methods for this object class, including the           *

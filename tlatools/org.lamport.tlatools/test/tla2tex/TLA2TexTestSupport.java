@@ -112,10 +112,12 @@ public final class TLA2TexTestSupport {
      * alignment, i.e. everything before LaTeX runs.
      */
     public static Token[][] analyze(String specText) {
-        Token[][] spec = Directives.prepare(tokenize(specText));
+        Token[][] spec = Directives.prepare(tokenize(specText),
+                                            () -> normalizeNewlines(specText).getBytes(StandardCharsets.UTF_8));
         CommentToken.ProcessComments(spec);
         FormatComments.Initialize();
         FindAlignments.FindAlignments(spec);
+        MacroSpans.finish(spec);
         return spec;
     }
 
