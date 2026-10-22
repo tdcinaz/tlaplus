@@ -75,6 +75,7 @@ public final class TLA2TexTestSupport {
         }
         TokenizeSpec.reset();
         TokenizeComment.reset();
+        Directives.reset();
     }
 
     private static Map<Field, Object> snapshotParameters() {
@@ -94,7 +95,10 @@ public final class TLA2TexTestSupport {
 
     // --------------------------------------------------------------- pipeline
 
-    /** Tokenizes a complete module (prolog, module, epilog) the way {@code TLA.runTranslation} does. */
+    /**
+     * Tokenizes a complete module (prolog, module, epilog) the way {@code TLA.runTranslation}
+     * does, up to but not including the directive pass, so directive lines are still present.
+     */
     public static Token[][] tokenize(String specText) {
         BuiltInSymbols.Initialize();
         Token[][] spec = TokenizeSpec.Tokenize(new VectorCharReader(toLines(specText), 0), TokenizeSpec.MODULE);
@@ -103,9 +107,12 @@ public final class TLA2TexTestSupport {
         return spec;
     }
 
-    /** {@link #tokenize(String)} followed by comment processing and alignment, i.e. everything before LaTeX runs. */
+    /**
+     * {@link #tokenize(String)} followed by the directive pass, comment processing and
+     * alignment, i.e. everything before LaTeX runs.
+     */
     public static Token[][] analyze(String specText) {
-        Token[][] spec = tokenize(specText);
+        Token[][] spec = Directives.prepare(tokenize(specText));
         CommentToken.ProcessComments(spec);
         FormatComments.Initialize();
         FindAlignments.FindAlignments(spec);

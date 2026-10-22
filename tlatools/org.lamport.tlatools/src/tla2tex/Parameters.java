@@ -110,6 +110,12 @@ public final class Parameters
     * If not equal to "", then it is the user-supplied package that is     *
     * used instead of LaTeXStyleFile.  Set by the -style option.           *
     ***********************************************************************/
+
+  public static String DirectivesFile = "";
+    /***********************************************************************
+    * If not equal to "", a file of "@tlatex:" directive lines that apply  *
+    * in addition to those in the spec.  Set by the -directives option.    *
+    ***********************************************************************/
     
   public static final String HelpFile = "help.txt";
     /***********************************************************************

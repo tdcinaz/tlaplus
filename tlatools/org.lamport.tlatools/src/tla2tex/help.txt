@@ -75,6 +75,19 @@ Options:
      with this option, TLATeX errs on the side of making it a symbol 
      TLATeX usually does better without this option.
 
+   -directives file
+     Reads "@tlatex:" directive lines from the file, in addition
+     to those in the spec's comments.  A directive is a comment
+     line such as
+        \* @tlatex: symbol alpha \alpha
+        \* @tlatex: macro Integral/3 \int_{#2}^{#3} #1
+        \* @tlatex: preset greek
+     The first makes the identifier alpha print as \alpha; the
+     second prints Integral(f, a, b) as \int_{a}^{b} f when the
+     application fits on one line and the spec parses; the third
+     declares symbols for all Greek letter names.  Directive lines
+     are not printed.  Use -info for details.
+
    -ptSize num
      Specifies the point size of the font.  May be 10, 11, or 12.
      Default is 10.

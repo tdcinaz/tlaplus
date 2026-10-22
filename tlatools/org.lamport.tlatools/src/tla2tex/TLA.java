@@ -200,6 +200,13 @@ public class TLA
         Finished("TokenizeSpec.FixPlusCal");
 
         /*********************************************************************
+        * Read the "@tlatex:" directives and remove their lines.             *
+        *********************************************************************/
+        Starting("Directives.prepare");
+        spec = Directives.prepare(spec);
+        Finished("Directives.prepare");
+
+        /*********************************************************************
         * Process the comment tokens.                                        *
         *********************************************************************/
         Starting("CommentToken.ProcessComments");
@@ -520,6 +527,15 @@ public class TLA
                 {
                     CommandLineError("-style file must have extension `.sty'");
                 }
+            } else if (option.equals("-directives"))
+            {
+                nextArg = nextArg + 1;
+                if (nextArg >= args.length)
+                {
+                    CommandLineError("No input file specified");
+                }
+                ;
+                Parameters.DirectivesFile = args[nextArg];
             } else if (option.equals("-ptSize"))
             {
                 nextArg = nextArg + 1;
