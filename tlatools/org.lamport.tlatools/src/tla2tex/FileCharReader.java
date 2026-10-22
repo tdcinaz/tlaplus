@@ -4,7 +4,8 @@
 * CLASS FileCharReader EXTENDS CharReader                                  *
 *                                                                          *
 * This class provides a CharReader for a file, using the                   *
-* java.io.BufferedReader class.  (See the CharReader class.)               *
+* java.io.BufferedReader class.  (See the CharReader class.)  The file is  *
+* read as UTF-8, whatever the platform's default encoding.                 *
 ***************************************************************************/
 package tla2tex;
 import java.io.BufferedReader;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class FileCharReader extends CharReader
   { private BufferedReader bufferedReader ;
@@ -26,7 +28,8 @@ public class FileCharReader extends CharReader
       *********************************************************************/
       { try { bufferedReader = 
                   new BufferedReader(new InputStreamReader(
-                                          new FileInputStream(fileName))) ;
+                                          new FileInputStream(fileName),
+                                          StandardCharsets.UTF_8)) ;
             }
         catch (FileNotFoundException e)
            { /**************************************************************

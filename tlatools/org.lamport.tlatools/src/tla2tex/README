@@ -74,13 +74,12 @@ Here are the known bugs in TLATeX:
    by the ' or ^'.  This requires adding an explicit width field to
    a CToken object, or something equivalent.
 
-2. The record component foo.WF_foo will be printed as
+2. [Fixed: TokenizeSpec.FollowsFieldDot keeps WF_ and SF_ as part of
+   an identifier that directly follows a field-selecting ".".]
+   The record component foo.WF_foo will be printed as
 
       foo.WF
             foo
-
-   Fixing this unlikely problem requires fixing the lexing algorithm
-   in TokenizeSpec.java.
 
 3. The input 
       

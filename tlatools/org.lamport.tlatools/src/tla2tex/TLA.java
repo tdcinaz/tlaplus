@@ -162,7 +162,10 @@ public class TLA
         *********************************************************************/
         long startTime = Debug.now();
         ToolIO.out.println(version);
-        GetArguments(args);
+        if (!GetArguments(args))
+        {
+            return;
+        }
 
         /*********************************************************************
         * Initialize class BuiltInSymbols.                                   *
@@ -259,7 +262,7 @@ public class TLA
         Finished("LaTeXOutput.WriteAlignmentFile");
 
         Starting("LaTeXOutput.RunLaTeX");
-        LaTeXOutput.RunLaTeX(Parameters.LaTeXAlignmentFile);
+        boolean alignmentOK = LaTeXOutput.RunLaTeX(Parameters.LaTeXAlignmentFile);
         Finished("LaTeXOutput.RunLaTeX");
 
         Starting("LaTeXOutput.SetDimensions");
@@ -275,13 +278,16 @@ public class TLA
         Finished("LaTeXOutput.WriteLaTeXFile");
 
         Starting("LaTeXOutput.RunLaTeX");
-        LaTeXOutput.RunLaTeX(Parameters.LaTeXOutputFile);
+        boolean outputOK = LaTeXOutput.RunLaTeX(Parameters.LaTeXOutputFile);
         Finished("LaTeXOutput.RunLaTeX");
 
-        ToolIO.out.println("TLATeX " + Parameters.LatexOutputExt + " output written on " + 
-                Parameters.LaTeXOutputFile + "." +
-                Parameters.LatexOutputExt +             
-                ((Parameters.MetaDir.equals("")) ? "" : ", from " + Parameters.MetaDir) + ".");
+        if (outputOK)
+        {
+            ToolIO.out.println("TLATeX " + Parameters.LatexOutputExt + " output written on " + 
+                    Parameters.LaTeXOutputFile + "." +
+                    Parameters.LatexOutputExt +             
+                    ((Parameters.MetaDir.equals("")) ? "" : ", from " + Parameters.MetaDir) + ".");
+        }
         
         if (Parameters.PSOutput)
         {
@@ -309,6 +315,21 @@ public class TLA
             }
 
         }
+        /*********************************************************************
+        * LaTeX runs in \batchmode, so it carries on after an error and      *
+        * usually still produces output.  Report the error only now, after   *
+        * everything has been written.                                       *
+        *********************************************************************/
+        if (!outputOK)
+        {
+            Debug.ReportError("LaTeX reported an error typesetting " + Parameters.LaTeXOutputFile
+                    + ".tex; see " + Parameters.LaTeXOutputFile + ".log.  The output may be incomplete");
+        }
+        if (!alignmentOK)
+        {
+            ToolIO.out.println("TLATeX warning: LaTeX reported an error typesetting the alignment file "
+                    + Parameters.LaTeXAlignmentFile + ".tex; alignments may be wrong.");
+        }
         Debug.printElapsedTime(startTime, "Total execution time:");
     } // END main
 
@@ -325,9 +346,10 @@ public class TLA
         }
     }
 
-    private static void GetArguments(String[] args)
+    private static boolean GetArguments(String[] args)
     /**********************************************************************
     * Get the command-line arguments and set the appropriate parameters.  *
+    * Returns false if there is nothing to typeset (-help or -info).      *
     **********************************************************************/
     {
         /********************************************************************
@@ -337,6 +359,7 @@ public class TLA
         boolean alignOutOption = false;
         boolean psOption = false;
         boolean nopsOption = false;
+        boolean outputExtOption = false;
         
         /********************************************************************
          * These static variables are set to true later in the method if    *
@@ -380,11 +403,11 @@ public class TLA
             if (option.equals("-help"))
             {
                 OutputMessageFile(Parameters.HelpFile);
-                System.exit(0);
+                return false;
             } else if (option.equals("-info"))
             {
                 OutputMessageFile(Parameters.InfoFile);
-                System.exit(0);
+                return false;
             } else if (option.equals("-grayLevel"))
             {
                 nextArg = nextArg + 1;
@@ -651,6 +674,7 @@ public class TLA
                 }
                 
                 Parameters.LatexOutputExt = args[nextArg];
+                outputExtOption = true;
             } else
             {
                 CommandLineError("Unknown option: " + option);
@@ -717,6 +741,29 @@ public class TLA
         {
             Parameters.PSOutput = true;
         }
+
+        /********************************************************************
+        * Without -latexOutputExt, the output is a pdf file if the LaTeX    *
+        * command is one that produces pdf, and otherwise a dvi file.       *
+        ********************************************************************/
+        if (!outputExtOption)
+        {
+            Parameters.LatexOutputExt = LaTeXProducesPdf(Parameters.LaTeXCommand) ? "pdf" : "dvi";
+        }
+        return true;
+    }
+
+    static boolean LaTeXProducesPdf(String latexCommand)
+    /*********************************************************************
+    * True iff the program run by latexCommand is pdflatex, lualatex,    *
+    * xelatex, or a variant such as pdflatex-dev, possibly given by a    *
+    * path and with options.                                             *
+    *********************************************************************/
+    {
+        String program = ExecuteCommand.commandLine(latexCommand, "").get(0);
+        program = RemovePathPrefix(program).toLowerCase(java.util.Locale.ROOT);
+        return program.startsWith("pdflatex") || program.startsWith("lualatex")
+               || program.startsWith("xelatex");
     }
 
     private static int GetIntArg(String str, String option)
@@ -838,8 +885,11 @@ public class TLA
 
     private static void MakePSFile()
     {
-        String Command = Parameters.PSCommand + " " + Parameters.LaTeXOutputFile + ".dvi";
-        ExecuteCommand.executeCommand(Command);
+        if (ExecuteCommand.executeCommand(Parameters.PSCommand, Parameters.LaTeXOutputFile + ".dvi") != 0)
+        {
+            ToolIO.out.println("TLATeX warning: the command `" + Parameters.PSCommand + " "
+                    + Parameters.LaTeXOutputFile + ".dvi' reported an error.");
+        }
         /*******************************************************************
         * Modified on 11 November 2001 to call ExecuteCommand.             *
         *******************************************************************/

@@ -98,6 +98,27 @@ public class TokenizeSpecTest {
     }
 
     @Test
+    public void fairnessPrefixAfterAFieldDotIsPartOfTheFieldName() {
+        // README bug 2: foo.WF_foo used to be lexed as foo . WF_ foo.
+        Token[] line = module("A == foo.WF_foo + r.SF_x")[1];
+        assertToken(line[2], Token.IDENT, "foo");
+        assertToken(line[3], Token.BUILTIN, ".");
+        assertToken(line[4], Token.IDENT, "WF_foo");
+        assertToken(line[6], Token.IDENT, "r");
+        assertToken(line[8], Token.IDENT, "SF_x");
+    }
+
+    @Test
+    public void fairnessPrefixAfterAProofStepNumberIsStillSplit() {
+        Token[] line = module("<1>2.WF_x(A)")[1];
+        assertToken(line[0], Token.PF_STEP, "<1>2.");
+        assertToken(line[1], Token.BUILTIN, "WF_");
+        assertToken(line[2], Token.IDENT, "x");
+        line = module("A == x . WF_v(B)")[1];
+        assertToken(line[4], Token.BUILTIN, "WF_");
+    }
+
+    @Test
     public void primeIsASeparatePostfixToken() {
         Token[][] spec = module("Next == x' = x + 1");
         Token[] line = spec[1];

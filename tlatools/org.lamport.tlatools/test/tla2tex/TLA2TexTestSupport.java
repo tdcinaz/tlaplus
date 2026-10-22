@@ -254,9 +254,16 @@ public final class TLA2TexTestSupport {
      * cannot change in-process.
      */
     public static CliResult runCli(Path workDir, String... args) throws IOException, InterruptedException {
+        return runCliWithJvmArgs(workDir, List.of(), args);
+    }
+
+    /** {@link #runCli(Path, String...)} with extra options for the child JVM, such as {@code -Dfile.encoding=...}. */
+    public static CliResult runCliWithJvmArgs(Path workDir, List<String> jvmArgs, String... args)
+            throws IOException, InterruptedException {
         String java = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
         List<String> command = new ArrayList<>();
         command.add(java);
+        command.addAll(jvmArgs);
         command.add("-cp");
         command.add(System.getProperty("java.class.path"));
         command.add("tla2tex.TLA");

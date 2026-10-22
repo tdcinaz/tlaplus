@@ -43,9 +43,11 @@ Options:
      
    -latexOutputExt ext
      The extension of the final output--e.g., dvi or pdf.
-     Needed only if -metadir is specified, so the output
-     will be copied to the directory from which tla2tex is
-     called.
+     The default is pdf if the LaTeX command is pdflatex,
+     lualatex, or xelatex, and dvi otherwise.  Used in the
+     message about the output and, if -metadir is specified,
+     to copy the output to the directory from which tla2tex
+     is called.
 
    -out file
      The root name of the main LaTeX input file and its output 

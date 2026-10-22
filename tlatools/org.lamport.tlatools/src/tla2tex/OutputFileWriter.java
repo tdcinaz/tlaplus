@@ -5,14 +5,18 @@
 *                                                                          *
 * An OutputFileWriter returns an object for writing an ouput file in the   *
 * user's directory.  The object's public methods are putLine(str), which   *
-* writes the string str as a line of the output file, and close().         *
+* writes the string str as a line of the output file, and close().  The    *
+* file is written as UTF-8, whatever the platform's default encoding.      *
 ***************************************************************************/
 package tla2tex;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public class OutputFileWriter
- { private FileWriter fileWriter = null ;
+ { private Writer fileWriter = null ;
    private String name = "" ;
 
    public OutputFileWriter(String fileName)
@@ -20,7 +24,8 @@ public class OutputFileWriter
      * Construct an OutputFileWriter from a file name.                     *
      **********************************************************************/
     { name = fileName ;
-      try {fileWriter = new FileWriter(fileName) ;}
+      try {fileWriter = new OutputStreamWriter(
+                          new FileOutputStream(fileName), StandardCharsets.UTF_8) ;}
       catch (java.io.IOException e)
        { Debug.ReportError( 
            "TLATeX cannot open output file " + name + ".\n"

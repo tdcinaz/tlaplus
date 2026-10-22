@@ -15,7 +15,7 @@
 *      log file contains the dimensions needed to do the alignment.        *
 *                                                                          *
 *   RunLaTeX(fileName)                                                     *
-*      Runs LaTeX on fileName.tex.                                         *
+*      Runs LaTeX on fileName.tex; false if LaTeX reported an error.       *
 *                                                                          *
 *   SetDimensions(Token[][])                                               *
 *      Sets distFromMargin and preSpace for all the tokens in the spec,    *
@@ -43,8 +43,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Vector;
-
-import util.ToolIO;
 
 
 public final class LaTeXOutput
@@ -410,13 +408,15 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
 /* ----------------------------------------------------------------------- */
 
 
-  public static void RunLaTeX(String fileName)
+  public static boolean RunLaTeX(String fileName)
     /***********************************************************************
-    * Runs LaTeX on the file fileName.tex.                                 *
+    * Runs LaTeX on the file fileName.tex.  Returns false if LaTeX         *
+    * reported an error, which in \batchmode it does with a non-zero      *
+    * exit code.                                                           *
     * Modified on 11 November 2001 to call ExecuteCommand.                 *
     ***********************************************************************/
-    { String latexCmd = Parameters.LaTeXCommand + " " + fileName + ".tex";
-      ExecuteCommand.executeCommand(latexCmd);
+    { return ExecuteCommand.executeCommand(Parameters.LaTeXCommand,
+                                           fileName + ".tex") == 0;
     }    
 
 
@@ -1481,7 +1481,6 @@ protected static String prependMetaDirToFileName(String fileName) {
     if (! Parameters.MetaDir.equals("")) {
         outputFileName = Parameters.MetaDir + File.separator + outputFileName;
     }
-ToolIO.out.println("looking for file: " + outputFileName);
     return outputFileName;
 }
 	

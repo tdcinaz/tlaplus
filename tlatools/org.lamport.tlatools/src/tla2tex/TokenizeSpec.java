@@ -825,6 +825,36 @@ public class TokenizeSpec
     private static Position getNextTokenPosition() {
         return new Position(vspec.size(), linev.size());
     }
+    private static boolean FollowsFieldDot()
+      /*********************************************************************
+      * True iff the token being read starts right after a "." that       *
+      * selects a record field, as in foo.WF_bar, so a "WF_" or "SF_" is   *
+      * the start of a field name rather than a fairness operator.  The   *
+      * "." that ends a proof-step number such as <1>2. does not count.   *
+      *********************************************************************/
+      { int n = linev.size() ;
+        if (n < 2) { return false ; } ;
+        Token dot = (Token) linev.elementAt(n - 1) ;
+        if (   (dot.type != Token.BUILTIN)
+            || (! dot.string.equals("."))
+            || (dot.column + 1 != col))
+          { return false ; } ;
+        if (n >= 5)
+          { Token t1 = (Token) linev.elementAt(n - 5) ;
+            Token t2 = (Token) linev.elementAt(n - 4) ;
+            Token t3 = (Token) linev.elementAt(n - 3) ;
+            Token t4 = (Token) linev.elementAt(n - 2) ;
+            if (   t1.string.equals("<") && (t2.type == Token.NUMBER)
+                && t3.string.equals(">")
+                && ((t4.type == Token.NUMBER) || (t4.type == Token.IDENT))
+                && (t2.column == t1.column + 1)
+                && (t3.column == t2.column + t2.getWidth())
+                && (t4.column == t3.column + 1))
+              { return false ; } ;
+          } ;
+        return true ;
+      }
+
     private static void TokenizingError(String msg) 
       { Debug.ReportError(
            msg + " `" + token + "' found at\n" + 
@@ -1010,7 +1040,8 @@ public class TokenizeSpec
 
                 case ID :
                   if (   (token.length() == 3)
-                      && (token.equals("WF_") || token.equals("SF_")))
+                      && (token.equals("WF_") || token.equals("SF_"))
+                      && ! FollowsFieldDot())
                     { TokenOut(Token.BUILTIN) ;
                       gotoStart(); 
                     }

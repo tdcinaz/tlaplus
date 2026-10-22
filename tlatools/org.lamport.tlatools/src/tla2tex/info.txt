@@ -372,10 +372,13 @@ upon the operating system up to three time to execute other programs:
  - It may run the -psCommand to create the Postscript or pdf output
    file.
 
-After each of the last two executions, TLATeX writes a message
-asserting that the appropriate output file was written.  It might lie.
-Any of those executions might fail, possibly causing no output file to
-be written.  Such a failure can even cause the operating system never
+If LaTeX reports an error (LaTeX runs in batch mode, so it carries on
+and usually still produces output), TLATeX finishes writing its output
+and then stops with an error message that names the LaTeX log file to
+read.  Otherwise, after each of the last two executions, TLATeX writes a
+message asserting that the appropriate output file was written.  The
+-psCommand execution might still fail, possibly causing no output file
+to be written.  Such a failure can even cause the operating system never
 to return control to TLATeX, so TLATeX never terminates.  Such a
 failure is the likely problem if TLATeX does not produce a dvi file or
 a Postscript/pdf file, or if it never terminates.  In that case, you
