@@ -1,6 +1,7 @@
 package tla2tex;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -92,6 +93,31 @@ public class TypesetWithLaTeXTest {
         assertTrue(result.output, result.output.contains("LaTeX reported an error typesetting Bad.tex"));
         assertTrue(Files.exists(workDir.resolve("Bad.tex")));
         assertTrue(Files.exists(workDir.resolve("Bad.pdf")));
+    }
+
+    @Test
+    public void bracedListTooWideBesideItsHeadGoesBelowIt() throws IOException, InterruptedException {
+        Path workDir = Files.createDirectory(workRoot.resolve("Wide"));
+        TLA2TexTestSupport.writeFile(workDir.resolve("Wide.tla"), String.join("\n",
+            "---- MODULE Wide ----",
+            "\\* @tlatex: brace conjunctions",
+            "EXTENDS Naturals",
+            "CONSTANT S",
+            "AVeryLongOperatorNameThatTakesUpSpace(parameterOne, parameterTwo) ==",
+            "  /\\ \\A element \\in S : element > parameterOne /\\ element < parameterTwo",
+            "  /\\ parameterOne < parameterTwo",
+            "Short ==",
+            "  /\\ \\A element \\in S : element \\in Nat",
+            "  /\\ S # {}",
+            "===="));
+        TLA2TexTestSupport.CliResult result = TLA2TexTestSupport.runCli(workDir,
+            "-latexCommand", "pdflatex", "-nops", "Wide.tla");
+        assertEquals(result.output, 0, result.exitCode);
+        String tex = TLA2TexTestSupport.readFile(workDir.resolve("Wide.tex"));
+        assertTrue(tex, tex.contains("\\@bx[") && tex.contains("{ Short \\.{\\defeq}}{%"));
+        String log = TLA2TexTestSupport.readFile(workDir.resolve("Wide.log"));
+        assertFalse(log, log.contains("Overfull"));
+        assertEquals("LaTeX errors", 0, TLA2TexTestSupport.countLatexErrors(workDir.resolve("Wide.log")));
     }
 
     @Test

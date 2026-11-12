@@ -242,6 +242,12 @@ public class TLA
         MacroSpans.finish(spec);
 
         /*********************************************************************
+        * Drop the conjunction lists that cannot be typeset with a brace,    *
+        * and mark the bullets of the others.                                *
+        *********************************************************************/
+        ConjunctionBraces.finish(spec);
+
+        /*********************************************************************
         * Write out the tla file with deleted comments removed, if the       *
         * -tlaOut option is chosen.                                          *
         *********************************************************************/

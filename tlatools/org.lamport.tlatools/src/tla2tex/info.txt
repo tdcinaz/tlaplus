@@ -486,7 +486,7 @@ directive.  Directives may appear on any comment line of the module,
 and in the text before and after the module; each applies to the whole
 module.  Directive lines are not typeset, and they are omitted from the
 -tlaOut file.  Lines for other tools, such as "@type:", are left alone.
-There are three directives:
+There are four directives:
 
    \* @tlatex: symbol alpha \alpha
       Typesets the identifier alpha as the TeX \alpha, wherever it
@@ -509,6 +509,18 @@ There are three directives:
       same way.  The name may be qualified, as in M!Integral(...), in
       which case the whole application is replaced.
 
+   \* @tlatex: brace conjunctions
+      Typesets a definition whose body is a bulleted conjunction list
+      like a piecewise function: the list is printed without its /\
+      bullets after a tall left brace, and the left-hand side and the
+      == are centered vertically on it.  It applies whether the first
+      /\ follows the == or begins the next line; in the second case
+      the list moves up beside the ==, unless that makes a line too
+      long, in which case it stays below with the brace in place of
+      the bullets.  Only the list that is the whole body gets a brace;
+      lists inside it are typeset as usual, except the bodies of LET
+      definitions, which get their own brace.
+
 The template is TeX in math mode, so it may use only commands that
 LaTeX and the tlatex package (or the package given with -style) define.
 
@@ -520,10 +532,18 @@ The -debug option reports each application typeset as usual and why.
 Applications inside a PlusCal algorithm or inside comments are always
 typeset as usual.
 
-To find the arguments, TLATeX parses the module with SANY's parser (it
-does not need the modules the spec extends).  If the module does not
-parse, no macro directive is applied and TLATeX prints a warning naming
-the first syntax error; symbol directives still apply.
+A conjunction list is typeset with a brace only if it has at least two
+conjuncts and at most 30 lines (the brace and the list cannot be split
+across pages), nothing but a comment follows it on its last line, its
+only comments are one-line comments right of the /\ column, and no
+comment comes between the == and the first /\.  Otherwise, and when
+the -number option is used, it is typeset as usual; -debug says why.
+
+To find the arguments and the conjunction lists, TLATeX parses the
+module with SANY's parser (it does not need the modules the spec
+extends).  If the module does not parse, no macro or brace directive is
+applied and TLATeX prints a warning naming the first syntax error;
+symbol directives still apply.
 
 The option "-directives fileName" reads directive lines from fileName
 as well.  Each line of the file is a directive, with or without a

@@ -262,6 +262,15 @@ public final class Parameters
     * -alignOut file with text txt.                                        *
     ***********************************************************************/
 
+  public final static String LaTeXBraceLine = "\\@bx";  
+    /***********************************************************************
+    * The command \@bx[d]{txt}{lines} starts a specification line in the  *
+    * -out file that begins with txt followed by a tall left brace and     *
+    * lines, a sequence of \@x commands set in a box centered vertically   *
+    * on txt.  It typesets a conjunction list for the "brace conjunctions" *
+    * directive and is defined in tlatexbraces.sty.                        *
+    ***********************************************************************/
+
   public final static String LaTeXStartAlignLine = "\\fl";  
     /***********************************************************************
     * The command \fl{txt} starts a specification line in the -alignOut    *

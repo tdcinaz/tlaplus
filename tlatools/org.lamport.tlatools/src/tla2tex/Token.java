@@ -197,6 +197,18 @@ public class Token
       * True for the tokens of a macro application after its first token; *
       * they are printed by the macro instead of on their own.             *
       *********************************************************************/
+
+    ConjunctionBraces.Region braceRegion = null ;
+      /*********************************************************************
+      * Non-null on the "==" of a definition whose conjunction-list body   *
+      * is typeset with a tall left brace.  Set by ConjunctionBraces.      *
+      *********************************************************************/
+
+    boolean bracedBullet = false ;
+      /*********************************************************************
+      * True for a "/\" bullet of such a list; it is printed invisibly,    *
+      * keeping its width, and the brace is drawn in its place.            *
+      *********************************************************************/
       
     /***********************************************************************
     * Below are the methods for this object class, including the           *

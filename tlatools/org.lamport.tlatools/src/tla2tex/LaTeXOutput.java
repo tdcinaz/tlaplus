@@ -376,6 +376,11 @@ private static void InnerWriteAlignmentFile(Token[][] spec,
       { writer.putLine("\\usepackage{" + Parameters.UserStyleFile + "}");
       } ;
 
+    if (Directives.active.braceConjunctions())
+      { CopyResourceFile(new ResourceFileReader(ConjunctionBraces.STYLE_FILE),
+                         writer);
+      } ;
+
     writer.putLine("\\begin{document}");
     writer.putLine("\\tlatex");
       /*********************************************************************
@@ -891,6 +896,21 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
     /***********************************************************************
     * Renders the tokens and tracks open sub/superscripts.                 *
     ***********************************************************************/
+
+  float[] braceOrigin = ConjunctionBraces.origins(spec, pos -> TotalIndent(spec, pos));
+  int[] braceClosings = ConjunctionBraces.closings(spec);
+    /***********************************************************************
+    * For a line set in the box of a conjunction list typeset with a      *
+    * brace (see ConjunctionBraces), braceOrigin is the distance from the  *
+    * margin of the box, which is subtracted from the line's indentation;  *
+    * otherwise it is NaN.  braceClosings counts the boxes that end on     *
+    * the line.                                                            *
+    ***********************************************************************/
+  boolean suppressPreSpace = false ;
+    /***********************************************************************
+    * True when the space before the next token was already written,      *
+    * before the box of a braced list that starts on the line.            *
+    ***********************************************************************/
  
   boolean hasPcal = TokenizeSpec.hasPcal ;
   int pcalStartLine ;
@@ -1111,9 +1131,16 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
           /*****************************************************************
           * Write the command to produce the preSpace space.               *
           *****************************************************************/
-          if (tok.preSpace >= Misc.stringToFloat("0.01"))
+          float preSpace = tok.preSpace ;
+          if (suppressPreSpace)
+            { preSpace = 0 ;
+              suppressPreSpace = false ;
+            }
+          else if ((item == 0) && ! Float.isNaN(braceOrigin[line]))
+            { preSpace = Math.max(0, preSpace - braceOrigin[line]) ; } ;
+          if (preSpace >= Misc.stringToFloat("0.01"))
             { outLine = outLine + Parameters.LaTeXSpaceCommand + "{"
-                          + Misc.floatToString(tok.preSpace,2) + "}";
+                          + Misc.floatToString(preSpace,2) + "}";
             } ;
   
           switch (tok.type)
@@ -1124,7 +1151,55 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
              case Token.PCAL_LABEL :
              case Token.STRING :
              case Token.PF_STEP :
-               outLine = outLine + renderer.render(spec[line], item);
+               if (tok.bracedBullet)
+                 { outLine = outLine + "\\phantom{"
+                               + renderer.render(spec[line], item) + "}" ;
+                 }
+               else
+                 { outLine = outLine + renderer.render(spec[line], item); }
+               if (tok.braceRegion != null)
+                 { /********************************************************
+                   * The == of a definition whose conjunction list is     *
+                   * typeset with a brace: the line so far is the first   *
+                   * argument of \@bx, and the lines of the list are its  *
+                   * second.                                              *
+                   ********************************************************/
+                   String start = Parameters.LaTeXStartLine + "{" ;
+                   Debug.Assert(outLine.startsWith(start),
+                      "LaTeXOutput.WriteLaTeXFile: braced list not at line start");
+                   String head = outLine.substring(start.length())
+                                   + renderer.closeSub() ;
+                   if (tok.braceRegion.sameLine)
+                     { Token bullet = spec[line][item + 1] ;
+                       if (bullet.preSpace >= Misc.stringToFloat("0.01"))
+                         { head = head + Parameters.LaTeXSpaceCommand + "{"
+                                   + Misc.floatToString(bullet.preSpace,2) + "}";
+                         } ;
+                       suppressPreSpace = true ;
+                       Misc.BreakStringOut(writer, 
+                              Parameters.LaTeXBraceLine + "{" + head + "}{%");
+                       outLine = start ;
+                     }
+                   else
+                     { /****************************************************
+                       * The list starts on the next line: pass its bullet  *
+                       * column (measured from the enclosing box, if the    *
+                       * definition is in one), where it goes if it does    *
+                       * not fit after the ==.                              *
+                       ****************************************************/
+                       float column = TotalIndent(spec, 
+                              new Position(tok.braceRegion.firstLine,
+                                           tok.braceRegion.firstItem)) ;
+                       if (! Float.isNaN(braceOrigin[line]))
+                         { column = Math.max(0, column - braceOrigin[line]) ; } ;
+                       Misc.BreakStringOut(writer, 
+                              Parameters.LaTeXBraceLine + "["
+                              + Misc.floatToString(column,2) + "]{"
+                              + head + "}{%");
+                       outLine = "" ;
+                       openLine = false ;
+                     } ;
+                 } ;
                break ;
 
              case Token.COMMENT :
@@ -1460,6 +1535,12 @@ private static void InnerWriteLaTeXFile(Token[][] spec,
        ******************************************************************/
        { Misc.BreakStringOut(writer, outLine + "}%");
        } ;
+
+      /*******************************************************************
+      * Close the \@bx commands of the braced lists that end here.        *
+      *******************************************************************/
+      for (int k = 0; (line < spec.length) && (k < braceClosings[line]); k++)
+       { writer.putLine("}%"); } ;
       
        /*
         * Write "\end{ppar}%" if this is a PlusCal Line.

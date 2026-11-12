@@ -1,0 +1,84 @@
+% TLATeX: conjunction lists typeset with a brace.
+%
+% TLATeX copies this file into the preamble after tlatex.sty (or after
+% the -style package) only when the spec has the directive
+%
+%   \* @tlatex: brace conjunctions
+%
+% so the output of other specs is unchanged.
+%
+% \@bx[d]{txt}{lines} typesets a definition whose body is a conjunction
+% list.  txt is the left-hand side and the \defeq, and lines are the
+% lines of the list, as \@x commands whose bullets are \phantom's and
+% whose indentation is measured from the bullet column.  The lines are
+% set in a box, each with a strut, and the box is preceded by a tall
+% left brace drawn where the bullets would be.
+%
+% Normally the box follows txt on the same line and is centered
+% vertically on it.  If the list was on the lines after txt in the
+% source, d is the distance in points from the margin of its bullet
+% column; when the widest line of the box does not fit to the right of
+% txt, txt is put on a line by itself and the brace and box on the next
+% line, d points from the margin, as in the source.  Without d the box
+% always follows txt.
+\makeatletter
+\newsavebox{\@bracebox}
+\newlength{\@bracewd}
+\newlength{\@braceht}
+\newlength{\@bracenat}
+\newlength{\@bracebeside}
+\newlength{\@bracebelow}
+\newif\if@bracebelow
+\newcommand{\@bx}[3][-1]{%
+  \settowidth{\@bracewd}{\mbox{$\mbox{}#2\mbox{}$}}%
+  \setlength{\@bracebeside}{\textwidth}%
+  \addtolength{\@bracebeside}{-\@bracewd}%
+  \setlength{\@bracebelow}{\textwidth}%
+  \addtolength{\@bracebelow}{-#1pt}%
+  \ifdim #1pt<\z@ \setlength{\@bracebelow}{\@bracebeside}\fi
+  \setbox\@bracebox=\vbox{%
+    \ifdim\@bracebeside>\@bracebelow
+      \setlength{\hsize}{\@bracebeside}%
+    \else
+      \setlength{\hsize}{\@bracebelow}%
+    \fi
+    \setlength{\textwidth}{\hsize}\setlength{\linewidth}{\hsize}%
+    \let\@x\@bracex #3\par}%
+  \@bracemeasure
+  \@bracebelowfalse
+  \ifdim\@bracenat>\@bracebeside
+    \ifdim #1pt<\z@ \else \@bracebelowtrue \fi
+  \fi
+  \setlength{\@braceht}{\ht\@bracebox}%
+  \addtolength{\@braceht}{\dp\@bracebox}%
+  \if@bracebelow
+    \wd\@bracebox=\@bracebelow
+    \@x{#2}%
+    \@x{\@s{#1}\@bracedbox}%
+  \else
+    \wd\@bracebox=\@bracebeside
+    \@x{#2\@bracedbox}%
+  \fi}
+
+% \@bracex{txt} is \@x{txt} inside the box: a line with a strut.
+\newcommand{\@bracex}[1]{\par\mbox{\strut$\mbox{}#1\mbox{}$}}
+
+% \@bracedbox, in math mode, produces the brace and the box.
+\newcommand{\@bracedbox}{%
+  \rlap{$\left\{\vcenter to \@braceht{}\right.$}%
+  \vcenter{\box\@bracebox}}
+
+% \@bracemeasure sets \@bracenat to the natural width of the widest
+% line of \@bracebox, taking the lines apart from the bottom up.
+\newcommand{\@bracemeasure}{%
+  \global\@bracenat=\z@
+  \setbox\z@=\vbox{\unvcopy\@bracebox \@bracemeasureloop}}
+\def\@bracemeasureloop{%
+  \unskip\unpenalty\unkern
+  \setbox\tw@=\lastbox
+  \ifvoid\tw@
+  \else
+    \setbox\tw@=\hbox{\unhbox\tw@}%
+    \ifdim\wd\tw@>\@bracenat \global\@bracenat=\wd\tw@ \fi
+    \expandafter\@bracemeasureloop
+  \fi}

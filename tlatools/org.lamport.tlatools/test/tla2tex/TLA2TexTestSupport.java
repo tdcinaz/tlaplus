@@ -118,6 +118,7 @@ public final class TLA2TexTestSupport {
         FormatComments.Initialize();
         FindAlignments.FindAlignments(spec);
         MacroSpans.finish(spec);
+        ConjunctionBraces.finish(spec);
         return spec;
     }
 

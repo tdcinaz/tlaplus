@@ -60,37 +60,43 @@ final class MacroSpans
     }
 
     /**
-     * Parses {@code source} with SANY and attaches an {@link Application} to
-     * the first token of each application in {@code spec} that a macro of
-     * {@code directives} matches. Does nothing, and does not run SANY, when
-     * there are no macro directives. {@code spec} must still have one row per
-     * source line.
+     * SANY's syntax-only parse of {@code source}. Returns null if it fails, with
+     * SANY's first error message in {@code failure[0]}.
      */
-    static void find(byte[] source, Token[][] spec, Directives directives)
+    static SyntaxTreeNode parse(byte[] source, String[] failure)
     {
-        if (!directives.hasMacros())
-        {
-            return;
-        }
         FirstError errors = new FirstError();
-        SyntaxTreeNode root = null;
-        String failure = null;
         try
         {
             TLAplusParser parser = new TLAplusParser(errors, source);
             if (parser.parse())
             {
-                root = (SyntaxTreeNode) parser.rootNode();
-            } else
-            {
-                failure = errors.first != null ? errors.first : "unknown parse error";
+                return (SyntaxTreeNode) parser.rootNode();
             }
+            failure[0] = errors.first != null ? errors.first : "unknown parse error";
         } catch (VirtualMachineError e)
         {
             throw e;
         } catch (Throwable e)
         {
-            failure = e.getMessage() != null ? e.getMessage() : e.toString();
+            failure[0] = e.getMessage() != null ? e.getMessage() : e.toString();
+        }
+        return null;
+    }
+
+    /**
+     * Attaches an {@link Application} to the first token of each application
+     * in {@code spec} that a macro of {@code directives} matches, using
+     * {@code root}, the result of {@link #parse} for {@code source}. If
+     * {@code root} is null, warns with {@code failure} instead. Does nothing
+     * when there are no macro directives. {@code spec} must still have one row
+     * per source line.
+     */
+    static void find(SyntaxTreeNode root, String failure, byte[] source, Token[][] spec, Directives directives)
+    {
+        if (!directives.hasMacros())
+        {
+            return;
         }
         if (root == null)
         {
@@ -219,7 +225,7 @@ final class MacroSpans
     }
 
     /** Index of the token of {@code row} that starts at {@code column}, or -1. */
-    private static int startingAt(Token[] row, int[] cols, int column)
+    static int startingAt(Token[] row, int[] cols, int column)
     {
         for (int i = 0; i < row.length; i++)
         {
@@ -232,7 +238,7 @@ final class MacroSpans
     }
 
     /** Index of the token of {@code row} whose last character is at {@code column}, or -1. */
-    private static int endingAt(Token[] row, int[] cols, int column)
+    static int endingAt(Token[] row, int[] cols, int column)
     {
         for (int i = 0; i < row.length; i++)
         {
@@ -255,7 +261,7 @@ final class MacroSpans
      * token whose text is not at its column in the tab-expanded source line is
      * moved left to the nearest column, after the previous token, where it is.
      */
-    private static final class SourceColumns
+    static final class SourceColumns
     {
         private final String[] lines;
         private final Token[][] spec;
@@ -407,7 +413,7 @@ final class MacroSpans
         }
     }
 
-    private static String firstLine(String msg)
+    static String firstLine(String msg)
     {
         String s = msg.trim();
         int nl = s.indexOf('\n');

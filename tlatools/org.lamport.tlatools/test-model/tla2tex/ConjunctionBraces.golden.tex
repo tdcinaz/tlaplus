@@ -1,0 +1,116 @@
+\tlatex
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ This spec uses the \ensuremath{brace} \ensuremath{conjunctions} directive:
+ each definition whose
+ body is a bulleted conjunction list is typeset like a piecewise function,
+ with a tall left brace in place of the \ensuremath{\.{\land}} bullets and
+ the defined name and
+ its \ensuremath{\.{\defeq}} centered vertically on the list. The last
+ definitions show the
+ cases that are typeset as usual.
+\end{cpar}%
+\end{lcom}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} ConjunctionBraces}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Naturals ,\, FiniteSets}%
+\@pvspace{8.0pt}%
+\@x{ {\CONSTANTS} Proc ,\, MaxCount}%
+\@x{ {\VARIABLES} pc ,\, count ,\, msgs}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ The list follows the \ensuremath{\.{\defeq}}.
+}%
+\@xx{}%
+\@bx{ TypeOK \.{\defeq}}{%
+ \@x{\phantom{ \.{\land}} pc \.{\in} [ Proc \.{\rightarrow} \{\@w{idle}
+ ,\,\@w{busy} ,\,\@w{done} \} ]}%
+ \@x{\phantom{ \.{\land}} count \.{\in} [ Proc \.{\rightarrow} 0 \.{\dotdot}
+ MaxCount ]}%
+ \@x{\phantom{ \.{\land}} msgs \.{\subseteq} Proc \.{\times} ( 0 \.{\dotdot}
+ MaxCount )}%
+}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ The list starts on the next line; it moves up beside the
+ \ensuremath{\.{\defeq}}.
+}%
+\@xx{}%
+\@bx[0]{ Init \.{\defeq}}{%
+\@x{\phantom{ \.{\land}} pc \.{=} [ p \.{\in} Proc \.{\mapsto}\@w{idle} ]}%
+\@x{\phantom{ \.{\land}} count \.{=} [ p \.{\in} Proc \.{\mapsto} 0 ]}%
+\@x{\phantom{ \.{\land}} msgs \.{=} \{ \}}%
+}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Conjuncts may span lines, contain disjunction lists and end-of-line
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ comments, and a nested definition\mbox{'}s list gets its own brace.
+}%
+\@xx{}%
+\@bx[0]{ Step ( p ) \.{\defeq}}{%
+\@x{\phantom{ \.{\land}} pc [ p ] \.{=}\@w{idle}}%
+\@x{\phantom{ \.{\land}} \.{\lor} count [ p ] \.{<} MaxCount}%
+\@y{\@s{0}%
+ room for another message
+}%
+\@xx{}%
+\@x{ \.{\lor} msgs \.{=} \{ \}}%
+\@bx{\phantom{ \.{\land}} \.{\LET} next \.{\defeq}}{%
+ \@x{\phantom{ \.{\land}} count \.{'} \.{=} [ count {\EXCEPT} {\bang} [ p ]
+ \.{=} @ \.{+} 1 ]}%
+ \@x{\phantom{ \.{\land}} msgs \.{'} \.{=} msgs \.{\cup} \{ {\langle} p ,\,
+ count [ p ] {\rangle} \}}%
+}%
+\@x{ \.{\IN} next}%
+ \@x{\phantom{ \.{\land}} pc \.{'} \.{=} [ pc {\EXCEPT} {\bang} [ p ]
+ \.{=}\@w{busy} ]}%
+}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ An invariant with one wide conjunct: it does not fit beside the long
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ name, so the name is on its own line and the brace below it.
+}%
+\@xx{}%
+\@bx[0]{ EveryProcessThatIsDoneHasSentAtLeastOneMessage \.{\defeq}}{%
+ \@x{\phantom{ \.{\land}} \A\, p \.{\in} Proc \.{:} pc [ p ] \.{=}\@w{done}
+ \.{\implies} \E\, m \.{\in} msgs \.{:} m [ 1 ] \.{=} p \.{\land} m [ 2 ]
+ \.{<} MaxCount}%
+ \@x{\phantom{ \.{\land}} Cardinality ( msgs ) \.{\leq} Cardinality ( Proc )
+ \.{*} ( MaxCount \.{+} 1 )}%
+}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Typeset as usual: a single conjunct, a comment between the
+ \ensuremath{\.{\defeq}} and the
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ list, and a body that is not just the list.
+}%
+\@xx{}%
+\@x{ Single \.{\defeq} \.{\land} msgs \.{=} \{ \}}%
+\@x{ Commented \.{\defeq}}%
+\@y{\@s{0}%
+ every process is idle
+}%
+\@xx{}%
+\@x{ \.{\land} pc \.{=} [ p \.{\in} Proc \.{\mapsto}\@w{idle} ]}%
+\@x{ \.{\land} msgs \.{=} \{ \}}%
+ \@x{ Quantified \.{\defeq} \A\, p \.{\in} Proc \.{:} \.{\land} count [ p ]
+ \.{\leq} MaxCount}%
+\@x{ \.{\land} pc [ p ] \.{\in} \{\@w{idle} ,\,\@w{busy} ,\,\@w{done} \}}%
+\@x{}\bottombar\@xx{}%
+\@pvspace{8.0pt}%

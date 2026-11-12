@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import tla2sany.parser.SyntaxTreeNode;
 import util.ToolIO;
 
 /**
@@ -21,6 +22,7 @@ import util.ToolIO;
  * \* @tlatex: symbol alpha \alpha
  * \* @tlatex: macro Integral/3 \int_{#2}^{#3} #1
  * \* @tlatex: preset greek
+ * \* @tlatex: brace conjunctions
  * </pre>
  *
  * Directives apply to the whole module wherever they appear. Their lines are
@@ -108,6 +110,7 @@ final class Directives
     private final Map<String, String> presetSymbols = new LinkedHashMap<>();
     private final Map<String, Macro> macros = new LinkedHashMap<>();
     private final Map<String, String> macroOrigins = new LinkedHashMap<>();
+    private boolean braceConjunctions = false;
     private final List<String> warnings = new ArrayList<>();
 
     /** The TeX that identifier {@code ident} typesets as, or null. */
@@ -141,9 +144,15 @@ final class Directives
         return !macros.isEmpty();
     }
 
+    /** True if definitions whose body is a conjunction list are typeset with a brace. */
+    boolean braceConjunctions()
+    {
+        return braceConjunctions;
+    }
+
     boolean isEmpty()
     {
-        return symbols.isEmpty() && presetSymbols.isEmpty() && macros.isEmpty();
+        return symbols.isEmpty() && presetSymbols.isEmpty() && macros.isEmpty() && !braceConjunctions;
     }
 
     /** The warnings issued so far, without the "TLATeX warning: " prefix. */
@@ -219,6 +228,9 @@ final class Directives
             break;
         case "preset":
             parsePreset(rest, where);
+            break;
+        case "brace":
+            parseBrace(rest, where);
             break;
         case "":
             warn(where + ": empty @tlatex: directive ignored");
@@ -330,6 +342,17 @@ final class Directives
         } else
         {
             warn(where + ": unknown preset `" + rest + "' ignored (known presets: greek)");
+        }
+    }
+
+    private void parseBrace(String rest, String where)
+    {
+        if (rest.equals("conjunctions"))
+        {
+            braceConjunctions = true;
+        } else
+        {
+            warn(where + ": unknown brace target `" + rest + "' ignored (known targets: conjunctions)");
         }
     }
 
@@ -502,8 +525,10 @@ final class Directives
     /**
      * Reads the {@code -directives} file (if any) and the spec's directives
      * into {@link #active}, finds the applications that macro directives
-     * typeset (reading the source from {@code source} only if there are
-     * macros), and returns the spec without its directive lines.
+     * typeset and the conjunction lists that the brace directive typesets
+     * (reading the source from {@code source} and parsing it with SANY only if
+     * one of them is requested), and returns the spec without its directive
+     * lines.
      */
     static Token[][] prepare(Token[][] spec, Supplier<byte[]> source)
     {
@@ -517,11 +542,16 @@ final class Directives
         if (Parameters.Debug && !d.isEmpty())
         {
             ToolIO.out.println("TLATeX directives: symbols " + d.symbols + ", preset symbols "
-                               + d.presetSymbols.size() + ", macros " + d.macros.values());
+                               + d.presetSymbols.size() + ", macros " + d.macros.values()
+                               + ", brace conjunctions " + d.braceConjunctions);
         }
-        if (d.hasMacros())
+        if (d.hasMacros() || d.braceConjunctions)
         {
-            MacroSpans.find(source.get(), spec, d);
+            byte[] bytes = source.get();
+            String[] failure = new String[1];
+            SyntaxTreeNode root = MacroSpans.parse(bytes, failure);
+            MacroSpans.find(root, failure[0], bytes, spec, d);
+            ConjunctionBraces.find(root, failure[0], bytes, spec, d);
         }
         return removeDirectives(spec);
     }
